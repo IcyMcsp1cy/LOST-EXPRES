@@ -1,38 +1,213 @@
 <!DOCTYPE html>
+
 <head>
+    <title>LOST EXPRES</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    <title>LOST EXPRES Capstone Project</title>
+    <meta charset="UTF-8">
+
+    <script src="/resources/jquery.min.js"></script>
+    <script src="/resources/tsparticles.min.js"></script>
+    <script src="/script.js"></script>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/resources/favicon.ico">
 </head>
 
 <body>
-    <div class="topnav">
-        <a href="/">LOST EXPRES</a>
+    <!-- Particle layer; stays at back in fixed position -->
+    <div id="particles-js"></div>
+
+    <!-- Navbar section; sticks to the top at all times -->
+    <div class="navbar">
+        <nav>
+            <span></span>
+            <label class="logo" id="tab-intro">
+                LOST EXPRES
+            </label>
+            <ul>
+                <li id="tab-team">Team</li>
+                <li id="tab-description">Description</li>
+                <li id="tab-requirements">Requirements</li>
+                <li id="tab-technologies">Technologies</li>
+                <li id="tab-solutions">Solutions</li>
+                <li id="tab-resources">Resources</li>
+            </ul>
+            <img src="/resources/menuicon.svg" alt="Menu:" id="menu">
+        </nav>
     </div>
-    <div class="subtitle">
-        A Capstone Project
-    </div>
 
-    <img src="logo.png" alt="LOST EXPRES">
-    This website is temporary, and currently under construction
-    <br>
-    Please contact us using our emails:
+    <!-- Main content section; each inner div will appear/disappear when tab is clicked -->
+    <main>
+        <div id="content-intro" class="active landing">
+            <!-- Landing page title larger than others; navbar title disappears on landing page -->
+            <h1>LOST EXPRES</h1>
 
-    <br><br>Brooke Caldwell
-    <br>bec243@nau.edu
+            <p>A web application interface to the Lowell Observatory Solar Telescope</p>
 
-    <br><br>Jared Cox
-    <br>jac973@nau.edu
+            <h3>Our Group</h3>
+            <!-- Images have max size of content width -->
+            <img src="/resources/group.png" alt="Group Photo">
+            <ul>
+                <li>Austin Bacon<br>akb364@nau.edu</li>
+                <li>Olivia Thoney<br>opt4@nau.edu</li>
+                <li>Jared Cox<br>jac973@nau.edu</li>
+                <li>Brooke Caldwell<br>bec243@nau.edu</li>
+                <li>Ian McIlrath<br>ikm25@nau.edu</li>
+            </ul>
 
-    <br><br>Olivia Thoney
-    <br>opt4@nau.edu
+            <div id="mentor"><u>Mentor</u> <br> Volodymyr Saruta <br> vvs28@nau.edu</div>
 
-    <br><br>Ian McIlrath
-    <br>ikm25@nau.edu
+            <h3>Our Client</h3>
+            <div id="client">
 
-    <br><br>Austin Bacon
-    <br>akb364@nau.edu
+                <img src="/resources/joe.png" alt="Joe Llama">
+                <p><b>Joe Llama</b> has been working as an Assistant Astronomer at Lowell Observatory for four years,
+                    and is
+                    the team lead for the Lowell Observatory Solar Telescope, and the EXtreme PREcision Spectrograph</p>
+            </div>
+        </div>
 
-    <br><br>
-    <footer></footer>
+
+
+        <div id="content-team" class="inactive">
+            <h2>Team</h2>
+            <p>
+                Team Content
+            </p>
+            <p>
+                Molestie a iaculis at erat pellentesque adipiscing commodo elit at. Proin sagittis nisl rhoncus mattis
+                rhoncus urna. Tincidunt augue interdum velit euismod in. Tellus integer feugiat scelerisque varius morbi
+                enim. Pellentesque adipiscing commodo elit at imperdiet. Massa massa ultricies mi quis hendrerit dolor
+                magna. Viverra nam libero justo laoreet sit amet. Dolor magna eget est lorem ipsum dolor sit. Urna
+                molestie
+                at elementum eu facilisis sed odio morbi quis. Non tellus orci ac auctor augue mauris augue neque
+                gravida.
+                Justo donec enim diam vulputate. Lorem mollis aliquam ut porttitor leo a. Mattis pellentesque id nibh
+                tortor
+                id aliquet. Elementum tempus egestas sed sed risus pretium quam. Vestibulum lorem sed risus ultricies
+                tristique nulla aliquet enim. Accumsan in nisl nisi scelerisque eu ultrices vitae auctor. Eu feugiat
+                pretium
+                nibh ipsum consequat nisl. Tellus in metus vulputate eu scelerisque felis imperdiet proin fermentum.
+                Lorem
+                dolor sed viverra ipsum nunc. Massa enim nec dui nunc mattis enim.
+            </p>
+        </div>
+
+
+
+        <div id="content-description" class="inactive">
+            <h2>Description</h2>
+            <p>
+                Blah blah description stuff
+            </p>
+            <p>
+                Molestie a iaculis at erat pellentesque adipiscing commodo elit at. Proin sagittis nisl rhoncus mattis
+                rhoncus urna. Tincidunt augue interdum velit euismod in. Tellus integer feugiat scelerisque varius morbi
+                enim. Pellentesque adipiscing commodo elit at imperdiet. Massa massa ultricies mi quis hendrerit dolor
+                magna. Viverra nam libero justo laoreet sit amet. Dolor magna eget est lorem ipsum dolor sit. Urna
+                molestie
+                at elementum eu facilisis sed odio morbi quis. Non tellus orci ac auctor augue mauris augue neque
+                gravida.
+                Justo donec enim diam vulputate. Lorem mollis aliquam ut porttitor leo a. Mattis pellentesque id nibh
+                tortor
+                id aliquet. Elementum tempus egestas sed sed risus pretium quam. Vestibulum lorem sed risus ultricies
+                tristique nulla aliquet enim. Accumsan in nisl nisi scelerisque eu ultrices vitae auctor. Eu feugiat
+                pretium
+                nibh ipsum consequat nisl. Tellus in metus vulputate eu scelerisque felis imperdiet proin fermentum.
+                Lorem
+                dolor sed viverra ipsum nunc. Massa enim nec dui nunc mattis enim.
+            </p>
+        </div>
+
+
+
+        <div id="content-requirements" class="inactive">
+            <h2>Requirements</h2>
+            <p>
+                Requirements Page
+            </p>
+            <p>
+                Molestie a iaculis at erat pellentesque adipiscing commodo elit at. Proin sagittis nisl rhoncus mattis
+                rhoncus urna. Tincidunt augue interdum velit euismod in. Tellus integer feugiat scelerisque varius morbi
+                enim. Pellentesque adipiscing commodo elit at imperdiet. Massa massa ultricies mi quis hendrerit dolor
+                magna. Viverra nam libero justo laoreet sit amet. Dolor magna eget est lorem ipsum dolor sit. Urna
+                molestie
+                at elementum eu facilisis sed odio morbi quis. Non tellus orci ac auctor augue mauris augue neque
+                gravida.
+                Justo donec enim diam vulputate. Lorem mollis aliquam ut porttitor leo a. Mattis pellentesque id nibh
+                tortor
+                id aliquet. Elementum tempus egestas sed sed risus pretium quam. Vestibulum lorem sed risus ultricies
+                tristique nulla aliquet enim. Accumsan in nisl nisi scelerisque eu ultrices vitae auctor. Eu feugiat
+                pretium
+                nibh ipsum consequat nisl. Tellus in metus vulputate eu scelerisque felis imperdiet proin fermentum.
+                Lorem
+                dolor sed viverra ipsum nunc. Massa enim nec dui nunc mattis enim.
+            </p>
+        </div>
+
+
+
+        <div id="content-technologies" class="inactive">
+            <h2>Technologies</h2>
+            <p>
+                Tech stuff
+            </p>
+        </div>
+
+
+
+        <div id="content-solutions" class="inactive">
+            <h2>Solutions</h2>
+            <p>
+                Alcohol is a solution
+            </p>
+            <p>
+                Molestie a iaculis at erat pellentesque adipiscing commodo elit at. Proin sagittis nisl rhoncus mattis
+                rhoncus urna. Tincidunt augue interdum velit euismod in. Tellus integer feugiat scelerisque varius morbi
+                enim. Pellentesque adipiscing commodo elit at imperdiet. Massa massa ultricies mi quis hendrerit dolor
+                magna. Viverra nam libero justo laoreet sit amet. Dolor magna eget est lorem ipsum dolor sit. Urna
+                molestie
+                at elementum eu facilisis sed odio morbi quis. Non tellus orci ac auctor augue mauris augue neque
+                gravida.
+                Justo donec enim diam vulputate. Lorem mollis aliquam ut porttitor leo a. Mattis pellentesque id nibh
+                tortor
+                id aliquet. Elementum tempus egestas sed sed risus pretium quam. Vestibulum lorem sed risus ultricies
+                tristique nulla aliquet enim. Accumsan in nisl nisi scelerisque eu ultrices vitae auctor. Eu feugiat
+                pretium
+                nibh ipsum consequat nisl. Tellus in metus vulputate eu scelerisque felis imperdiet proin fermentum.
+                Lorem
+                dolor sed viverra ipsum nunc. Massa enim nec dui nunc mattis enim.
+            </p>
+        </div>
+
+
+
+        <div id="content-resources" class="inactive">
+            <h2>Resources</h2>
+            <p>
+                Deliverables and stuff
+            </p>
+            <p>
+                Molestie a iaculis at erat pellentesque adipiscing commodo elit at. Proin sagittis nisl rhoncus mattis
+                rhoncus urna. Tincidunt augue interdum velit euismod in. Tellus integer feugiat scelerisque varius morbi
+                enim. Pellentesque adipiscing commodo elit at imperdiet. Massa massa ultricies mi quis hendrerit dolor
+                magna. Viverra nam libero justo laoreet sit amet. Dolor magna eget est lorem ipsum dolor sit. Urna
+                molestie
+                at elementum eu facilisis sed odio morbi quis. Non tellus orci ac auctor augue mauris augue neque
+                gravida.
+                Justo donec enim diam vulputate. Lorem mollis aliquam ut porttitor leo a. Mattis pellentesque id nibh
+                tortor
+                id aliquet. Elementum tempus egestas sed sed risus pretium quam. Vestibulum lorem sed risus ultricies
+                tristique nulla aliquet enim. Accumsan in nisl nisi scelerisque eu ultrices vitae auctor. Eu feugiat
+                pretium
+                nibh ipsum consequat nisl. Tellus in metus vulputate eu scelerisque felis imperdiet proin fermentum.
+                Lorem
+                dolor sed viverra ipsum nunc. Massa enim nec dui nunc mattis enim.
+            </p>
+        </div>
+
+
+    </main>
+
 </body>
