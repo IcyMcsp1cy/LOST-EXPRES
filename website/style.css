@@ -10,7 +10,7 @@ html {
     width: 100%;
     height: 100%;
 
-    
+
     --black: #020122;
     --red: #F4442E;
     --orange: #FC9E4F;
@@ -24,7 +24,7 @@ body {
     position: relative;
     overflow: hidden;
     overflow-y: scroll;
-    
+
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -45,7 +45,7 @@ main {
     left: 50%;
     transform: translate(-50%);
     width: 90vw;
-    
+
     min-height: 50vh;
 }
 
@@ -56,7 +56,7 @@ main div {
     font-size: 20px;
     text-align: justify;
     margin-bottom: 40px;
-    
+
 }
 
 main div img {
@@ -65,7 +65,7 @@ main div img {
     border: 2px solid var(--orange);
     display: block;
     border-color: var(--red) var(--champagne) var(--orange) var(--red);
-    
+
 }
 
 main div.inactive {
@@ -148,9 +148,9 @@ nav span {
     top: 5px;
     text-decoration: none;
     cursor: pointer;
-    
+
     transition: 0.2s;
-    
+
     color: var(--black);
     text-shadow: -0.08ch -0.08ch var(--red),
                  0.08ch -0.08ch var(--champagne),
@@ -175,7 +175,7 @@ nav ul {
     padding-top: 5px;
     align-items: center;
     padding-inline-start: 0;
-    
+
 
 
     position: absolute;
@@ -220,7 +220,7 @@ nav li:hover {
     top: 0;
     position: fixed;
     z-index: -1;
-    
+
 }
 
 
@@ -264,7 +264,7 @@ nav li:hover {
 ===================================*/
 @media screen and (min-width: 600px) {
     #client {
-        
+
         flex-direction: row;
     }
     #client img {
@@ -296,12 +296,12 @@ nav li:hover {
         font-size: 36px;
     }
 
-    
-    
+
+
     nav {
         min-height: 3vw;
     }
-    
+
     nav span {
         display: none;
     }
@@ -328,9 +328,9 @@ nav li:hover {
         font-size: 3vw;
     }
 
-    
 
-    
+
+
 }
 
 
@@ -357,4 +357,21 @@ nav li:hover {
     main div {
         width: 1080px;
     }
+}
+
+/* Styling for Team Page Section
+=====================================*/
+.team-container{
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+
+  height: 300px;
+}
+.team-member{
+  display: flex;
+  flex-direction: column;
+
+  width: 300px;
+  margin: 30px;
 }
