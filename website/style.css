@@ -72,7 +72,7 @@ main div.inactive {
     display: none;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5 {
     margin-block-start: 10px;
     margin-block-end: 10px;
     width: 100%;
@@ -101,6 +101,24 @@ h3 {
 
 h4 {
     font-size: 4vw;
+}
+
+h5 {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    text-align: initial;
+    display: inline;
+    font-size: 20px;
+    letter-spacing: 0.15ch;
+    text-shadow: -0.08ch -0.08ch 1px var(--red),
+                 0.08ch -0.08ch 1px var(--orange),
+                 -0.08ch 0.08ch 1px var(--red),
+                 0.08ch 0.08ch 1px var(--red);
+}
+
+h5 a {
+    color: var(--black);
+    text-decoration: none;
 }
 
 br {
@@ -259,6 +277,24 @@ nav li:hover {
     margin: auto;
 }
 
+.team-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+  
+    height: 300px;
+}
+  .team-member {
+    display: flex;
+    flex-direction: column;
+  
+    width: 300px;
+    margin: 30px;
+}
+
+#content-deliverables p {
+    margin-top: 5px;
+}
 
 /*! Verticle Tablet Content Area
 ===================================*/
@@ -359,19 +395,4 @@ nav li:hover {
     }
 }
 
-/* Styling for Team Page Section
-=====================================*/
-.team-container{
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
 
-  height: 300px;
-}
-.team-member{
-  display: flex;
-  flex-direction: column;
-
-  width: 300px;
-  margin: 30px;
-}
