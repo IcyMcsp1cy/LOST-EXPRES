@@ -48,8 +48,8 @@ window.onload = function () {
         transition($("#content-solutions"));
     })
 
-    $("#tab-resources").click(function () {
-        transition($("#content-resources"));
+    $("#tab-deliverables").click(function () {
+        transition($("#content-deliverables"));
     })
 
 
