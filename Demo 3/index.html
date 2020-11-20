@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
+<head>
     <title>LOST EXPRES: Demonstration 3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-
     <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
+</head>
+<body>
 
-    <div id="app">
-        <div class="signIn" v-if="loggedIn == false">
 
-        </div>
-        <div class="image" v-else>
-          <!--Add an image here-->
-        </div>
+<div id="app">
+    <div class="signIn" v-if="loggedIn">
+        <h1 id = "header" >TEST LOGIN PAGE</h1>
+        <form action="validate.php" method="post">
+
+            <div class="container">
+                <input type="text" placeholder="Enter Username" name="uname" required>
+
+                <input type="password" placeholder="Enter Password" name="psw" required>
+
+                <button type="submit">Login</button>
+                <label>
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+            </div>
+        </form>
+
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
-    <script src="script.js"></script>
-  </body>
+    <div class="image" v-else>
+        <!--Add an image here-->
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script src="Demo3.js"></script>
+</body>
 </html>
