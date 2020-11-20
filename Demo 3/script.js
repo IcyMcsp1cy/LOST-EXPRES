@@ -7,7 +7,18 @@ var signIn = new Vue({
     input_username: '',
     password: 'Password',
     input_password: '',
-    loggedIn: true,
-    
+    loggedIn: false,
+
+  },
+  methods: {
+    compareLoggIn: function (){
+
+      var correct_username = this.input_username === "Capstone";
+      var correct_password = this.input_password === "Passowrd";
+
+      // GOTTA ADD SOMETHING THAT DISPLAYS LIKE SUCCESS OR FAIL
+
+      this.loggedIn = correct_password && correct_username;
+    }
   }
 })
