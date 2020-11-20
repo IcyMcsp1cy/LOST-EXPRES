@@ -3,22 +3,24 @@
 var signIn = new Vue({
   el: '#app',
   data: {
-    username: 'Username',
+    username: 'Enter Username',
     input_username: '',
-    password: 'Password',
+    password: 'Enter Password',
     input_password: '',
     loggedIn: false,
 
   },
   methods: {
-    compareLoggIn: function (){
+    compareLogIn: function (){
 
-      var correct_username = this.input_username === "Capstone";
-      var correct_password = this.input_password === "Password";
-
+      if(this.input_username === "Capstone" && this.input_password === "Password"){
+        this.loggedIn = true;
+      }
+      else{
+        this.loggedIn = false;
+      }
       // GOTTA ADD SOMETHING THAT DISPLAYS LIKE SUCCESS OR FAIL
 
-      this.loggedIn = correct_password && correct_username;
     }
   }
 })
