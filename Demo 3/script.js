@@ -14,7 +14,7 @@ var signIn = new Vue({
     compareLoggIn: function (){
 
       var correct_username = this.input_username === "Capstone";
-      var correct_password = this.input_password === "Passowrd";
+      var correct_password = this.input_password === "Password";
 
       // GOTTA ADD SOMETHING THAT DISPLAYS LIKE SUCCESS OR FAIL
 
