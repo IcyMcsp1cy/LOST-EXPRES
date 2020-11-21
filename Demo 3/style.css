@@ -45,3 +45,7 @@ button:hover {
         float: none;
     }
 }
+/*When appears, text red*/
+.failLogIn{
+  color: red;
+}

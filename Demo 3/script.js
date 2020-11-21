@@ -7,7 +7,7 @@ var signIn = new Vue({
         password: 'Enter Password',
         input_password: '',
         loggedIn: false,
-
+        fail_text: '',
     },
     methods: {
         compareLogIn: function (){
@@ -16,7 +16,7 @@ var signIn = new Vue({
             }
             // GOTTA ADD SOMETHING THAT DISPLAYS LIKE SUCCESS OR FAIL
             else{
-
+              this.fail_text = "Incorrect Username/Password";
             }
         }
     }
