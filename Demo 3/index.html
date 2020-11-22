@@ -1,17 +1,46 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 
 <html>
-  <head>
+<head>
     <title>LOST EXPRES: Demonstration 3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
-    <script src="script.js"></script>
-
     <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    
-  </body>
+</head>
+<body>
+<div id="app">
+    <div class="signIn" v-if="!loggedIn">
+        <h1 id = "header" >TEST LOGIN PAGE</h1>
+        <form>
+            <div class="container">
+                <input type="text"
+                v-model="input_username"
+                :placeholder="username"
+                :name="input_username" required>
+
+                <input type="password"
+                v-model="input_password"
+                :placeholder="password"
+                :name="input_password" required>
+
+                <button v-on:click="compareLogIn">Login</button>
+                <label>
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+            </div>
+        </form>
+        <div class="failLogIn">
+          <p id="fail">{{fail_text}}</p>
+        </div>
+
+    </div>
+
+    <div  v-else>
+        <p>SUCCESSFUL LOG IN</p>
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script src="script.js"></script>
+</body>
 </html>
