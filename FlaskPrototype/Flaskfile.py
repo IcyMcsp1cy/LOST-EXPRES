@@ -22,7 +22,7 @@ def login():
 def search():
     return "<a href='/'>home</a> <h1>Search Page</h1> "
 
-@app.route("/accountpage")
+@app.route("/account")
 def accountpage():
     return "<a href='/'>home</a> <h1>Account Page</h1>"
 

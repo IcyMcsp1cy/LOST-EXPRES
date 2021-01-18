@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  {% include 'header.txt' %}
+
+  <body>
+
+    {% include 'navbar.txt' %}
+
+    <main role="main" class="container">
+        <!-- Main Content here-->
+    </main>
+
+    {% include 'footer.txt' %}
+
+  </body>
+</html>
