@@ -4,16 +4,9 @@
     <title></title>
     <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}" />
 </head>
-    <body>
+{% include 'header.txt' %}
+<body>
     <h1>Home Page</h1>
-    <ul>
-        <li><a href='/graphing'>Graphing</a></li>
-        <li><a href='/news'>News</a></li>
-        <li><a href='/login'>Login Page</a></li>
-        <li><a href='/search'>Search Page</a></li>
-        <li><a href='/accountpage'>Account Page</a></li>
-        <li><a href='/admin'>Admin Page</a></li>
-        <li><a href='/appendix'>Appendix</a></li>
-    </ul>
+    {% include 'navbar.txt' %}
     </body>
 </html>
