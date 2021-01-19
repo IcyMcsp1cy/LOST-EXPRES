@@ -12,20 +12,20 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="/news">News</a>
+          <a class="nav-link" href="/news/">News</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="/data">Data</a>
+          <a class="nav-link" href="/data/">Data</a>
         </li>
 
         
         <li class="nav-item">
-            <a class="nav-link" href="/glossary">Appendix</a>
+            <a class="nav-link" href="/glossary/">Appendix</a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
+            <a class="nav-link" href="/login/">Login</a>
         </li>
         
         

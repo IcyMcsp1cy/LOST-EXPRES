@@ -19,6 +19,22 @@ def not_found(e):
 def index():
     return render_template('index.html')
 
+@server.route("/graphing/")
+def graphing():
+    return "<a href='/'>home</a> <h1>Graphing Dashboard</h1>"
+
+@server.route("/search/")
+def search():
+    return "<a href='/'>home</a> <h1>Search Page</h1> "
+
+@server.route("/account/")
+def account():
+    return "<a href='/'>home</a> <h1>Account Page</h1>"
+
+@server.route("/admin/")
+def admin():
+    return "<a href='/'>home</a> <h1>Admin Page</h1>"
+
 #~ serve file named in extension
 @server.route('/<string:page_name>/')
 def render_static(page_name):
