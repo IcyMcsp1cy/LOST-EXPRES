@@ -3,6 +3,10 @@ h1{
     text-align: center;
 }
 
+h3{
+  text-align: center;
+}
+
 ul {
     list-style-type: none;
     margin: 0;
@@ -35,7 +39,7 @@ li a:hover {
 }
 
 .home_member{
-  width: 45%;
+  width: 50%;
 }
 
 @media (min-width: 500px) {
