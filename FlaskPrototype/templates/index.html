@@ -7,6 +7,24 @@
 {% include 'header.txt' %}
 <body>
     <h1>Home Page</h1>
-    {% include 'navbar.txt' %}
-    </body>
+    {% include 'navbar.txt'%}
+
+    <div class="home_container">
+      <div class="home_member">
+        <h3>Radial Velocity Graph: XYZ</h3>
+        <div id="graph"></div>
+
+      </div>
+      <div class="home_member">
+        NEWS HERE
+      </div>
+
+      </div>
+
+      {% include 'footer.txt' %}
+</body>
+      <script type="text/javascript">
+        var graphs = {{plot | safe}};
+        Plotly.plot('graph',graphs,{});
+      </script>
 </html>

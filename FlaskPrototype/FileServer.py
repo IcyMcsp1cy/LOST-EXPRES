@@ -5,9 +5,32 @@
 
 from flask import Flask, render_template, abort
 
+#~ ATTEMPTING TO GRAPH FOR HOMEPAGE
+import plotly
+import plotly.graph_objs as go
+import pandas as pd
+import numpy as np
+import json
+
+def homepage_plot():
+
+    N = 1000
+    rand_x = np.random.randn(N)
+    rand_y = np.random.randn(N)
+
+    data = [go.Scatter(
+        x = rand_x,
+        y = rand_y,
+        mode = 'markers'
+    )]
+
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
 #~ Flask Server Setup
 #~=============================================================================
-server = Flask(__name__)
+server = Flask(__name__, static_folder="./static")
 
 #~ Error Handling
 @server.errorhandler(404)
@@ -17,7 +40,9 @@ def not_found(e):
 #~ Server Routing
 @server.route('/')
 def index():
-    return render_template('index.html')
+    graph = homepage_plot()
+
+    return render_template('index.html', plot=graph)
 
 @server.route("/graphing/")
 def graphing():

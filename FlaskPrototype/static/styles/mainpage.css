@@ -1,3 +1,4 @@
+
 h1{
     text-align: center;
 }
@@ -24,4 +25,21 @@ li a {
 /* Change the link color to #111 (black) on hover */
 li a:hover {
     background-color: #111;
+}
+
+/*----------------- Homepage Styling (cause i dunno where else to put it) -------------------)*/
+.home_container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.home_member{
+  width: 45%;
+}
+
+@media (min-width: 500px) {
+  .home_container {
+    flex-direction: row;
+  }
 }
