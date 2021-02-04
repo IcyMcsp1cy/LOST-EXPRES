@@ -11,8 +11,7 @@ def init_views( server ):
     #~ Server Routing
     @server.route('/')
     def index():
-        graph = homepage_plot()
-        return render_template('index.html', plot=graph)
+        return render_template('home.html')
 
     @server.route("/graphing/")
     def graphing():
