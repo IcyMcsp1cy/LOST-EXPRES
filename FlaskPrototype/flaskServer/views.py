@@ -1,6 +1,5 @@
 
 from flask import render_template, abort
-from .indexPlot import homepage_plot
 
 def init_views( server ):
 
