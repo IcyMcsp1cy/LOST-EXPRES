@@ -1,5 +1,6 @@
 
 from flask import render_template, abort
+from .indexPlot import homepage_plot
 
 def init_views( server ):
 
@@ -11,7 +12,8 @@ def init_views( server ):
     #~ Server Routing
     @server.route('/')
     def index():
-        return render_template('home.html')
+        graph = homepage_plot()
+        return render_template('index.html', plot=graph)
 
     @server.route("/graphing/")
     def graphing():
