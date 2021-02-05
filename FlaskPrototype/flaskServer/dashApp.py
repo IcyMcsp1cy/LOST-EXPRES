@@ -122,7 +122,6 @@ def init_dash( server ):
         Output('click-data', 'children'),
         Input('basic-interactions', 'clickData'))
     def display_hover_data(clickData):
-        df[df[0] == ]
         return dumps(clickData, indent=2)
 
 
