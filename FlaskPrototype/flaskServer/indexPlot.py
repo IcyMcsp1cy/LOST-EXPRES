@@ -21,12 +21,7 @@ def homepage_plot():
         )
     ))
 
-    fig.to_image("static/indexGraph.png")
-
-    img_bytes = fig.to_image(format="png")
-    encoding = b64encode(img_bytes).decode()
-    img_b64 = "data:image/png;base64," + encoding
-    return html.Img(src=img_b64, style={'width': '100%'})
+    #return html.Img(src=img_b64, style={'width': '100%'})
 
     graphJSON = dumps([fig], cls=plotly.utils.PlotlyJSONEncoder)
 
