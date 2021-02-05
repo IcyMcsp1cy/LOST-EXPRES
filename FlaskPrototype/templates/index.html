@@ -1,34 +1,32 @@
 <!doctype html>
+
 <html>
-<head>
-  {% include 'header.txt' %}
-    <title></title>
-</head>
-<body>
-    <h1>Home Page</h1>
-    {% include 'navbar.txt'%}
+    <head>
+        {% include 'header.txt' %}
+        <title></title>
+    </head>
 
-    <div class="home_container">
-      <div class="home_member">
-        <h3><u>Radial Velocity Graph: XYZ</u></h3>
-        <div id="graph"></div>
+    <body>
+        {% include 'navbar.txt'%}
 
-      </div>
-      <div class="home_member">
-        <h3><u>News of the Week</u></h3>
 
-        <div class="row justify-content-md-center">
-        {% include 'news.txt' %}
+        <div class="row">
+            <div class="col-lg-6 justify-content-center">
+                <h3 class="text-center">Radial Velocity Graph</h3>
+                <div id="graph"></div>
+            </div>
+            <div class="col-lg-6 justify-content-md-center">
+                <h3 class="text-center">News of the Week</h3>
+
+                <div class="row justify-content-center">
+                {% include 'news.txt' %}
+                </div>
+            </div>
         </div>
-
-      </div>
-
-      </div>
-
-      {% include 'footer.txt' %}
-</body>
-      <script type="text/javascript">
+        {% include 'footer.txt' %}
+    </body>
+    <script type="text/javascript">
         var graphs = {{plot | safe}};
         Plotly.plot('graph',graphs,{});
-      </script>
+    </script>
 </html>

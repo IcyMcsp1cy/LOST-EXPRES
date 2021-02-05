@@ -125,16 +125,16 @@ def init_dash( server ):
         return dumps(clickData, indent=2)
 
 
-    # app.clientside_callback(
-    #     """
-    #     function(relayoutData) {
-    #         return ;
-    #     }
-    #     """,
-    #     Output('relayout-data', 'children'),
-    #     Output('new-table', 'data'),
-    #     Input('basic-interactions', 'relayoutData')
-    # )
+    app.clientside_callback(
+        """
+        function(relayoutData) {
+            return ;
+        }
+        """,
+        Output('relayout-data', 'children'),
+        Output('new-table', 'data'),
+        Input('basic-interactions', 'relayoutData')
+    )
     @app.callback(
         Output('relayout-data', 'children'),
         Output('new-table', 'data'),
