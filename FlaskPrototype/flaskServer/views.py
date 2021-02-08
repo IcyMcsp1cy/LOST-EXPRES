@@ -39,12 +39,16 @@ def init_views( server ):
     #Called from requestAccess.html when the form is submitted
     @server.route("/requestEmail", methods=['POST'])
     def requestEmail():
+        #save the form inputs as variables
         firstName = request.form['fname']
         lastName = request.form['lname']
+        fullName = firstName + " " + lastName
         email = request.form['email']
         institution = request.form['institution']
-        msg = Message('Request Access Submission', sender = 'LOSTEXPRES1@gmail.com', recipients = ['LOSTEXPRES2@gmail.com'])
-        msg.body = "Hello, " + firstName + " " + lastName + " has requested researcher access for the LOST telescope.\n" + "Email: " + email + "\nInstitution: " + institution
+        msgHeader = "Request Access Submission from " + fullName
+        #send an email using the input parameters in the header and message
+        msg = Message(msgHeader, sender = 'LOSTEXPRES1@gmail.com', recipients = ['LOSTEXPRES2@gmail.com'])
+        msg.body = "Hello, " + fullName + " has requested researcher access for the LOST telescope.\n" + "Email: " + email + "\nInstitution: " + institution
         mail.send(msg)
         return "Request access form has been sent."
 
