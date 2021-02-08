@@ -1,4 +1,5 @@
-from flask import render_template, abort
+from flask import render_template, abort, request
+from flask_mail import Mail, Message
 from .indexPlot import homepage_plot
 
 def init_views( server ):
@@ -25,6 +26,31 @@ def init_views( server ):
     @server.route("/admin/")
     def admin():
         return "<a href='/'>home</a> <h1>Admin Page</h1>"
+
+    #email setup
+    mail= Mail(server)
+    server.config['MAIL_SERVER']='smtp.gmail.com'
+    server.config['MAIL_PORT'] = 465
+    server.config['MAIL_USERNAME'] = 'LOSTEXPRES1@gmail.com'
+    server.config['MAIL_PASSWORD'] = 'Lost2021'
+    server.config['MAIL_USE_TLS'] = False
+    server.config['MAIL_USE_SSL'] = True
+    mail = Mail(server)
+    #Called from requestAccess.html when the form is submitted
+    @server.route("/requestEmail", methods=['POST'])
+    def requestEmail():
+        #save the form inputs as variables
+        firstName = request.form['fname']
+        lastName = request.form['lname']
+        fullName = firstName + " " + lastName
+        email = request.form['email']
+        institution = request.form['institution']
+        msgHeader = "Request Access Submission from " + fullName
+        #send an email using the input parameters in the header and message
+        msg = Message(msgHeader, sender = 'LOSTEXPRES1@gmail.com', recipients = ['LOSTEXPRES2@gmail.com'])
+        msg.body = "Hello, " + fullName + " has requested researcher access for the LOST telescope.\n" + "Email: " + email + "\nInstitution: " + institution
+        mail.send(msg)
+        return "Request access form has been sent."
 
     #~ serve file named in extension
     @server.route('/<string:page_name>/')
