@@ -80,22 +80,23 @@ def init_dash( server ):
     __name__,
     server=server,
     url_base_pathname='/data/',
+    assets_folder='static',
     external_stylesheets=external_stylesheets
     )
 
     data = pd.read_csv('static/Sun.txt')
     df = data[data['ACCEPT'] == True]
 
-    figure = scatter(df, x="MJD", y="V")
-    figure.update_layout(clickmode='event')
+    rv_figure = scatter(df, x="MJD", y="V")
+    rv_figure.update_layout(clickmode='event')
 
 
     app.layout = html.Div([
         navbar,
         html.Br(className='pb-5'),
         dcc.Graph(
-            id='basic-interactions',
-            figure=figure,
+            id='rv-plot',
+            figure=rv_figure,
             className="pt-5"
         ),
         html.Div([
@@ -105,50 +106,82 @@ def init_dash( server ):
             """),
             html.Pre(id='click-data'),
         ]),
+        html.Div([], id='spec-container'),
         html.Div([
-            dcc.Markdown("""
-                **Layout Data**
-                Click on points in the graph.
-            """),
-            html.Pre(id='relayout-data'),
-        ]),
-        dt.DataTable(id='new-table',
-                        columns=[{"name": i, "id": i} for i in df.columns][1::],
-                        data=df.to_dict('records')),
+            dt.DataTable(id='rv-table',
+                    columns=[{"name": i, "id": i} for i in df.columns][1::],
+                    data=df.to_dict('records')),
+        ], className='d-none'),
         html.Br(className='pb-5'),
     ])
 
-    @app.callback(
-        Output('click-data', 'children'),
-        Input('basic-interactions', 'clickData'))
-    def display_hover_data(clickData):
-        return dumps(clickData, indent=2)
+    # @app.callback(
+    #     Output('click-data', 'children'),
+    #     Input('basic-interactions', 'clickData'))
+    # def display_hover_data(clickData):
+    #     return dumps(clickData, indent=2)
 
+
+    # app.clientside_callback(
+    #     """
+    #     function(relayoutData) {
+    #         console.log(relayoutData);
+    #         let obj = JSON.stringify(relayoutData);
+    #         return obj;
+    #     }
+    #     """,
+    #     Output('click-data', 'children'),
+    #     Input('rv-plot', 'clickData')
+    # )
 
     app.clientside_callback(
         """
-        function(relayoutData) {
-            return ;
+        function(clickData, table) {
+            if(clickData === undefined) {
+                return;
+            }
+            console.log(table);
+
+            let pointData = clickData.points[0];
+            let data = JSON.stringify(table[pointData.pointIndex].FILENAME)
+
+            return data;
         }
         """,
-        Output('relayout-data', 'children'),
-        Output('new-table', 'data'),
-        Input('basic-interactions', 'relayoutData')
+        Output('click-data', 'children'),
+        Input('rv-plot', 'clickData'),
+        Input('rv-table', 'data')
     )
-    @app.callback(
-        Output('relayout-data', 'children'),
-        Output('new-table', 'data'),
-        Input('basic-interactions', 'relayoutData'))
-    def display_relayout_data(relayoutData):
-        sel = None
-        if relayoutData != None:
-            sel = df.copy()
-            if 'xaxis.range[0]' in relayoutData:
-                sel = df[df['MJD'] > relayoutData['xaxis.range[0]']]
-                sel = sel[sel['MJD'] < relayoutData['xaxis.range[1]']]
-                sel = sel[sel['V'] > relayoutData['yaxis.range[0]']]
-                sel = sel[sel['V'] < relayoutData['yaxis.range[1]']]
-                return dumps(relayoutData, indent=2), sel.to_dict('records') 
-        return dumps(relayoutData, indent=2), df.to_dict('records')
 
-    return app 
+    @app.callback(
+        Output('spec-container', 'children'),
+        Input('click-data', 'children')
+    )
+    def getGraph(children):
+        if(children == None):
+            return
+
+        return [dcc.Graph(
+            id='spec-plot',
+            figure=rv_figure,
+            className="pt-5"
+        ), children]
+
+
+    # @app.callback(
+    #     Output('relayout-data', 'children'),
+    #     Output('new-table', 'data'),
+    #     Input('basic-interactions', 'relayoutData'))
+    # def display_relayout_data(relayoutData):
+    #     sel = None
+    #     if relayoutData != None:
+    #         sel = df.copy()
+    #         if 'xaxis.range[0]' in relayoutData:
+    #             sel = df[df['MJD'] > relayoutData['xaxis.range[0]']]
+    #             sel = sel[sel['MJD'] < relayoutData['xaxis.range[1]']]
+    #             sel = sel[sel['V'] > relayoutData['yaxis.range[0]']]
+    #             sel = sel[sel['V'] < relayoutData['yaxis.range[1]']]
+    #             return dumps(relayoutData, indent=2), sel.to_dict('records') 
+    #     return dumps(relayoutData, indent=2), df.to_dict('records')
+
+    # return app 

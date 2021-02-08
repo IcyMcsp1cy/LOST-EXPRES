@@ -10,8 +10,7 @@ def homepage_plot():
     rand_y = np.random.randn(N)
 
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
+    fig = go.Scatter(
         x= rand_x,
         y= rand_y,
         mode="markers",
@@ -19,7 +18,7 @@ def homepage_plot():
             opacity=0.6,
             colorscale="Viridis"
         )
-    ))
+    )
 
     #return html.Img(src=img_b64, style={'width': '100%'})
 
