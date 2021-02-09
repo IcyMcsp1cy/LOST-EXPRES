@@ -23,9 +23,6 @@ def init_views( server ):
     def search():
         return "<a href='/'>home</a> <h1>Search Page</h1> "
 
-    @server.route("/admin/")
-    def admin():
-        return "<a href='/'>home</a> <h1>Admin Page</h1>"
 
     #email setup
     mail= Mail(server)
