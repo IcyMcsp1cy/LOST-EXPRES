@@ -100,6 +100,7 @@ def init_dash( server ):
             figure=rv_figure,
             className="pt-5"
         ),
+
     # Input field for axes changes in text box
         html.Label('Edit X and Y axes range here:'),
             html.Div(
@@ -161,15 +162,18 @@ def init_dash( server ):
         Input('rv-plot', 'clickData'),
         Input('rv-table', 'data')
     )
+
     @app.callback(Output('output-state', 'children'),
                   Input('submit-button-state', 'n_clicks'),
                   State('input-on-submit-x', 'value'),
                   State('input-on-submit-y', 'value'))
     def update_output(n_clicks, input1, input2):
+        rv_figure.update_xaxes(range=input1),
+        rv_figure.update_yaxes(range=input2),
         return u'''
-            The Button has been pressed {} times,
-            Input 1 is "{}",
-            and Input 2 is "{}"
+        The Button has been pressed {} times,
+        Input 1 is "{}",
+        and Input 2 is "{}"
         '''.format(n_clicks, input1, input2)
 
     @app.callback(
