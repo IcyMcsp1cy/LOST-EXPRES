@@ -37,7 +37,7 @@ def init_views( server ):
     server.config['MAIL_USE_SSL'] = True
     mail = Mail(server)
     #Called from requestAccess.html when the form is submitted
-    @server.route("/requestEmail", methods=['GET', 'POST'])
+    @server.route('/requestEmail', methods=['GET', 'POST'])
     def requestEmail():
         #save the form inputs as variables
         firstName = request.form['fname']
