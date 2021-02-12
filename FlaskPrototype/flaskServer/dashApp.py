@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table as dt
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from plotly.express import scatter
 import pandas as pd
 
@@ -136,6 +136,22 @@ def init_dash( server ):
 
     app.clientside_callback(
         """
+        function(data, scale) {
+            return {
+                'data': data,
+                'layout': {
+                    'yaxis': {'type': scale}
+                }
+            }
+        }
+        """,
+        Output('clientside-graph', 'figure'),
+        Input('rv-plot', 'relayoutData'),
+        State('rv-table', 'data')
+    )
+
+    app.clientside_callback(
+        """
         function(clickData, table) {
             if(clickData === undefined) {
                 return;
@@ -166,22 +182,3 @@ def init_dash( server ):
             figure=rv_figure,
             className="pt-5"
         ), children]
-
-
-    # @app.callback(
-    #     Output('relayout-data', 'children'),
-    #     Output('new-table', 'data'),
-    #     Input('basic-interactions', 'relayoutData'))
-    # def display_relayout_data(relayoutData):
-    #     sel = None
-    #     if relayoutData != None:
-    #         sel = df.copy()
-    #         if 'xaxis.range[0]' in relayoutData:
-    #             sel = df[df['MJD'] > relayoutData['xaxis.range[0]']]
-    #             sel = sel[sel['MJD'] < relayoutData['xaxis.range[1]']]
-    #             sel = sel[sel['V'] > relayoutData['yaxis.range[0]']]
-    #             sel = sel[sel['V'] < relayoutData['yaxis.range[1]']]
-    #             return dumps(relayoutData, indent=2), sel.to_dict('records') 
-    #     return dumps(relayoutData, indent=2), df.to_dict('records')
-
-    # return app 
