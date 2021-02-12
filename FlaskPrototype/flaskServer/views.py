@@ -23,9 +23,6 @@ def init_views( server ):
     def search():
         return "<a href='/'>home</a> <h1>Search Page</h1> "
 
-    @server.route("/admin/")
-    def admin():
-        return "<a href='/'>home</a> <h1>Admin Page</h1>"
 
     #email setup
     mail= Mail(server)
@@ -37,7 +34,7 @@ def init_views( server ):
     server.config['MAIL_USE_SSL'] = True
     mail = Mail(server)
     #Called from requestAccess.html when the form is submitted
-    @server.route("/requestEmail", methods=['POST'])
+    @server.route('/requestEmail', methods=['GET', 'POST'])
     def requestEmail():
         #save the form inputs as variables
         firstName = request.form['fname']
