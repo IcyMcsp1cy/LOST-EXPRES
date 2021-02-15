@@ -1,4 +1,3 @@
-import dash
 from dash import Dash
 from json import dumps
 import dash_bootstrap_components as dbc
@@ -100,15 +99,6 @@ def init_dash( server ):
             figure=rv_figure,
             className="pt-5"
         ),
-
-    # Input field for axes changes in text box
-        html.Label('Edit X and Y axes range here:'),
-            html.Div(
-            dcc.Input(placeholder='(X)-(X)', id='input-on-submit-x', type='text')),
-            dcc.Input(placeholder='(Y)-(Y)', id='input-on-submit-y', type='text'),
-                html.Button('Submit', id='submit-button-state', n_clicks=0),
-                    html.Div(id='output-state'),
-
         html.Div([
             dcc.Markdown("""
                 **Click Data**
@@ -146,6 +136,22 @@ def init_dash( server ):
 
     app.clientside_callback(
         """
+        function(data, scale) {
+            return {
+                'data': data,
+                'layout': {
+                    'yaxis': {'type': scale}
+                }
+            }
+        }
+        """,
+        Output('clientside-graph', 'figure'),
+        Input('rv-plot', 'relayoutData'),
+        State('rv-table', 'data')
+    )
+
+    app.clientside_callback(
+        """
         function(clickData, table) {
             if(clickData === undefined) {
                 return;
@@ -163,19 +169,6 @@ def init_dash( server ):
         Input('rv-table', 'data')
     )
 
-    @app.callback(Output('output-state', 'children'),
-                  Input('submit-button-state', 'n_clicks'),
-                  State('input-on-submit-x', 'value'),
-                  State('input-on-submit-y', 'value'))
-    def update_output(n_clicks, input1, input2):
-        rv_figure.update_xaxes(range=input1),
-        rv_figure.update_yaxes(range=input2),
-        return u'''
-        The Button has been pressed {} times,
-        Input 1 is "{}",
-        and Input 2 is "{}"
-        '''.format(n_clicks, input1, input2)
-
     @app.callback(
         Output('spec-container', 'children'),
         Input('click-data', 'children')
@@ -189,22 +182,3 @@ def init_dash( server ):
             figure=rv_figure,
             className="pt-5"
         ), children]
-
-
-    # @app.callback(
-    #     Output('relayout-data', 'children'),
-    #     Output('new-table', 'data'),
-    #     Input('basic-interactions', 'relayoutData'))
-    # def display_relayout_data(relayoutData):
-    #     sel = None
-    #     if relayoutData != None:
-    #         sel = df.copy()
-    #         if 'xaxis.range[0]' in relayoutData:
-    #             sel = df[df['MJD'] > relayoutData['xaxis.range[0]']]
-    #             sel = sel[sel['MJD'] < relayoutData['xaxis.range[1]']]
-    #             sel = sel[sel['V'] > relayoutData['yaxis.range[0]']]
-    #             sel = sel[sel['V'] < relayoutData['yaxis.range[1]']]
-    #             return dumps(relayoutData, indent=2), sel.to_dict('records') 
-    #     return dumps(relayoutData, indent=2), df.to_dict('records')
-
-    # return app 
