@@ -3,11 +3,11 @@ FLASK_ENV = 'development'
 DEBUG = True
 
 SECRET_KEY = 'AlrightThenKeepYourSecrets'
-MONGO_URI = 'mongodb+srv://Dev:dev@cluster0.odagz.mongodb.net/SolarExpres?retryWrites=true&w=majority'
+MONGO_URI = 'database'
 
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 465
-MAIL_USERNAME = 'LOSTEXPRES1@gmail.com'
-MAIL_PASSWORD = 'Lost2021'
+MAIL_SERVER = 'email'
+MAIL_PORT = 000
+MAIL_USERNAME = 'email@email.com'
+MAIL_PASSWORD = 'password'
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
