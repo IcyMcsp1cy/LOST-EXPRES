@@ -1,21 +1,15 @@
-<!DOCTYPE html>
+{% extends 'base_page.html' %}
 
-<html lang="en">
+{% set title = "Glossary" %}
 
-{% include 'header.txt' %}
-
-<body>
-
-{% include 'navbar.txt' %}
-
-<main role="main" class="container">
+{% block content %}
     <h1>APPENDIX PAGE</h1>
 
     <ul>
-      <li> <b>Angstrom:</b>
+       <li> <b>Angstrom:</b>
          10<sup>-10</sup> meters
       </li> <b>Flux:</b>
-         The number of particles to hit a sensor in a set amount of time.
+      The number of particles to hit a sensor in a set amount of time.
       <li> <b>Modified Julian Data (MJD):</b>
          Where D is the number of days since midnight on November 17<sup>th</sup> 1858,
          D + (H + (M + S/60)/60)/24
@@ -24,9 +18,5 @@
          The rate of change of the distance between an object and a given point. 
       </li>
     </ul>
-</main>
+{% endblock %}
 
-{% include 'footer.txt' %}
-
-</body>
-</html>
