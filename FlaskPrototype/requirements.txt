@@ -4,6 +4,8 @@ plotly
 dash
 dash-bootstrap-components
 flask-mail
+pymongo
+dnspython
 #Possibly needed
 pandas
 numpy

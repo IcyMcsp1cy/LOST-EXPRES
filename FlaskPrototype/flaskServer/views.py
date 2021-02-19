@@ -1,6 +1,10 @@
 from flask import render_template, abort, request
 from flask_mail import Mail, Message
 from .indexPlot import homepage_plot
+from .extensions import mongo
+import pymongo
+
+
 
 def init_views( server ):
 
@@ -23,9 +27,12 @@ def init_views( server ):
     def search():
         return "<a href='/'>home</a> <h1>Search Page</h1> "
 
+    mongo = pymongo.MongoClient("mongodb+srv://Dev:dev@cluster0.odagz.mongodb.net/SolarExpres?retryWrites=true&w=majority")
     @server.route("/admin/")
     def admin():
-        return "<a href='/'>home</a> <h1>Admin Page</h1>"
+        RV = mongo.SolarExpres.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        return render_template('admin.html', RV=RV)
+
 
     #email setup
     mail= Mail(server)
@@ -37,7 +44,7 @@ def init_views( server ):
     server.config['MAIL_USE_SSL'] = True
     mail = Mail(server)
     #Called from requestAccess.html when the form is submitted
-    @server.route("/requestEmail", methods=['POST'])
+    @server.route('/requestEmail', methods=['POST'])
     def requestEmail():
         #save the form inputs as variables
         firstName = request.form['fname']
