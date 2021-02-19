@@ -27,7 +27,6 @@ def init_views( server ):
     def search():
         return "<a href='/'>home</a> <h1>Search Page</h1> "
 
-    mongo = pymongo.MongoClient("mongodb+srv://Dev:dev@cluster0.odagz.mongodb.net/SolarExpres?retryWrites=true&w=majority")
     @server.route("/admin/")
     def admin():
         RV = mongo.SolarExpres.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
