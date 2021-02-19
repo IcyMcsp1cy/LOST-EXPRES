@@ -36,8 +36,8 @@ def init_views( server ):
     mail= Mail(server)
     server.config['MAIL_SERVER']='smtp.gmail.com'
     server.config['MAIL_PORT'] = 465
-    server.config['MAIL_USERNAME'] = 'LOSTEXPRES1@gmail.com'
-    server.config['MAIL_PASSWORD'] = 'LostExpres2021'
+    server.config['MAIL_USERNAME'] = 'USERNAME'
+    server.config['MAIL_PASSWORD'] = 'PASSWORD'
     server.config['MAIL_USE_TLS'] = False
     server.config['MAIL_USE_SSL'] = True
     mail = Mail(server)
