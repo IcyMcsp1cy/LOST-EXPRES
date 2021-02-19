@@ -29,7 +29,7 @@ def init_views( server ):
 
     @server.route("/admin/")
     def admin():
-        RV = mongo.SolarExpres.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        RV = mongo.db.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
         return render_template('admin.html', RV=RV)
 
 

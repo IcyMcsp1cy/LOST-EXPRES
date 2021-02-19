@@ -1,9 +1,0 @@
-#Definitely needed
-flask
-plotly
-dash
-dash-bootstrap-components
-flask-mail
-#Possibly needed
-pandas
-numpy
