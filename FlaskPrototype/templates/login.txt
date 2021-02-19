@@ -22,10 +22,10 @@
           <br>
 
           </div>
-          
+
           <div class="form-group">
-            <p class="text-center">Don't have account? <a href="#" id="signup">Sign up here</a></p>
-            <p class="text-center"> <a href="#" id="signup">Forgot your password?</a></p>
+            <p class="text-center">Don't have account? <a href="/requestAccess" id="signup">Request access here</a></p>
+            <p class="text-center"> <a href="/forgotPassword" id="signup">Forgot your password?</a></p>
         </div>
        </form>
 

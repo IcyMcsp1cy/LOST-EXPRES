@@ -19,7 +19,7 @@
           <a class="nav-link" href="/data/">Data</a>
         </li>
 
-        
+
         <li class="nav-item">
             <a class="nav-link" href="/glossary/">Appendix</a>
         </li>
@@ -27,8 +27,11 @@
         <li class="nav-item">
             <a class="nav-link" href="/login/">Login</a>
         </li>
-        
-        
+
+        <li class="nav-item">
+            <a class="nav-link" href="/account/">Account</a>
+        </li>
+
 
         <!--<li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown">Dropdown</a>
