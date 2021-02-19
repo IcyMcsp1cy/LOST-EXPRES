@@ -11,7 +11,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         },
         zoomfunc: function (value, table) {
             data = JSON.parse(table)
-            if(figure === undefined || value === undefined){
+            if(table === undefined || value === undefined){
                 throw 'input undefined'
             }
             return {

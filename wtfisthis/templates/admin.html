@@ -1,0 +1,96 @@
+{% extends 'base_page.html' %}
+{% from "macros.html" import side_link with context %}
+
+{% block title %}Admin{% endblock title %}
+
+{% set title_link = "#" %}
+
+
+{% block body %}
+<div class="d-flex h-100" id="wrapper">
+
+    <!-- Sidebar -->
+    <div class="bg-dark border-right-dark sticky-top" id="sidebar-wrapper">
+        <div class="sidebar-heading font-weight-bold text-danger">Start Bootstrap </div>
+        <div class="list-group list-group-flush">
+            {{ side_link("/home", "Home") }}
+            {{ side_link("/home", "Home") }}
+            {{ side_link("/home", "Home") }}
+            {{ side_link("/home", "Home") }}
+            {{ side_link("/home", "Home") }}
+        </div>
+    </div>
+
+    <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+    </script>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div class="overflow-auto h-100" id="page-content-wrapper">
+
+        {% include 'navbar.html' %}
+        <br>
+        <main role="main" class="container">
+        {% block content %}
+            <h1>Admin Page</h1>
+            <form id="admin"></form>
+            <div class="overflow-scroll table-responsive p-4" style="height:500px;">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Radial Velocity Files</th>
+                            <th>Date</th>
+                            <th>Public Access</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Add Files</td>
+                            <td>as needed</td>
+                            <td>
+                                <input type="radio" name="date_public" form="admin">
+                            </td>
+                        </tr>
+                    </tbody>
+            
+                </table>
+            </div>
+
+            <div class="overflow-scroll table-responsive p-4" style="height:500px;">
+                <table class="table table-striped align-middle ">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>News Files</th>
+                            <th>Front Page</th>
+                        </tr>
+                    </thead>
+            
+                    <tbody>
+                        <tr>
+                            <td>Add Files</td>
+                            <td>
+                                <input type="radio" name="front_news" form="admin">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row justify-content-center p-4">
+                <button class="btn btn-lg" type="submit" form="admin">Apply Changes</button>
+            </div>
+        {% endblock content %}
+        </main>
+    </div>
+</div>
+
+<script>
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+{% endblock body %}
