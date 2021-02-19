@@ -48,6 +48,21 @@ def init_views( server ):
         mail.send(msg)
         return "Request access form has been sent."
 
+    @server.route('/forgotPasswordRequest', methods=['GET', 'POST'])
+    def forgotPasswordRequest():
+        #save the form input as a variable
+        email = request.form['email']
+        #send an email using the input parameters in the header and message
+        msg = Message("Forgot Password Email", sender = 'LOSTEXPRES1@gmail.com', recipients = [email])
+        msg.body = "Hello, follow this link to reset your password: WIP"
+        mail.send(msg)
+        return "Forgot password form has been sent."
+
+    @server.route('/loginAttempt', methods=['GET', 'POST'])
+    def loginAttempt():
+        return "<h1>Login Successful.</h1> <a href='/'>home</a>"
+        
+
     #~ serve file named in extension
     @server.route('/<string:page_name>/')
     def render_static(page_name):
