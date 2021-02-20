@@ -1,0 +1,16 @@
+{% extends 'base_page.html' %}
+
+{% block content %}
+<h1>Request Access Form</h1>
+<form action="/requestEmail" method="post">
+    <label for="fname">First name:</label><br>
+    <input type="text" id="fname" name="fname"><br>
+    <label for="lname">Last name:</label><br>
+    <input type="text" id="lname" name="lname"><br>
+    <label for="email">email:</label><br>
+    <input type="text" id="email" name="email"><br>
+    <label for="institution">Institution:</label><br>
+    <input type="text" id="institution" name="institution"><br><br>
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}
