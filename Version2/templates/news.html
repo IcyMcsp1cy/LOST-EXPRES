@@ -1,22 +1,11 @@
 {% extends 'base_page.html' %}
 
-{% set title = "News" %}
-
 {% block content %}
-<div class="row justify-content-md-center mw-100">
-  <div class="col-md-10 blog-main ">
+
 
     
-{% block  article %}
 {% include 'article.html' %}
-{% endblock %}
-  
 
-    <nav class="blog-pagination">
-      <a class="btn btn-outline-primary" href="#">Older</a>
-      <a class="btn btn-outline-secondary disabled" href="#">Newer</a>
-    </nav>
-    <br>
-  </div><!-- /.blog-main -->
-</div>
+
+
 {% endblock %}
