@@ -1,20 +1,95 @@
-<h3 class="pb-3 mb-4 font-italic border-bottom">
-    From the Firehose
-  </h3>
-  <img src="{{ url_for('static',filename='solar.jpg') }}" class="img-fluid" alt="Responsive image">
-  
-  <br/>
-  
-  <div class="blog-post">
-    <h2 class="blog-post-title">Information and stuff</h2>
-    <p class="blog-post-meta">Jan 14, 2021 by <a href="#">Somebody</a></p>
-  
-    <p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-    <ul>
-      <li>Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</li>
-      <li>Donec id elit non mi porta gravida at eget metus.</li>
-      <li>Nulla vitae elit libero, a pharetra augue.</li>
-    </ul>
-    <p>Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
-    <p>Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.</p>
-  </div><!-- /.blog-post -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Clean Blog - Start Bootstrap Theme</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{{ url_for('static', filename='/styles/bootstrap.min.css') }}" rel="stylesheet">
+
+  <!-- Custom fonts for this template -->
+  <link href="{{ url_for('static', filename='/styles/all.min.css') }}" rel="stylesheet" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <!-- Custom styles for this template -->
+  <link href="{{ url_for('static', filename='/styles/clean-blog.min.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+
+
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('{{ url_for('static', filename='post-bg.jpg') }}')">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="site-heading">
+          <h1>News Page</h1>
+          <span class="subheading">In testing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      {%for post in posts%}
+      <div class="post-preview">
+        <a href="post.html">
+          <h2 class="post-title">
+            {{post.title}}
+          </h2>
+          <h3 class="post-subtitle">
+            {{post.subtitle}}
+          </h3>
+        </a>
+        <p class="post-meta">Posted by
+          <a href="#">{{post.author}}</a>
+          on {{post.datetime}}</p>
+      </div>
+      {%endfor%}
+      <hr>
+      <!-- Pager -->
+      <div class="clearfix">
+        <a class="btn btn-primary float-right" href="#">Older Posts &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <p class="copyright text-muted">Copyright &copy; Your Website 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
+<!-- Custom scripts for this template -->
+<script src="{{ url_for('static', filename='clean-blog.min.js') }}"></script>
+
+</body>
+
+</html>
