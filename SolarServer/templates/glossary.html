@@ -3,20 +3,17 @@
 {% set title = "Glossary" %}
 
 {% block content %}
-    <h1>APPENDIX PAGE</h1>
+    <h1>Glossary</h1>
 
-    <ul>
-       <li> <b>Angstrom:</b>
-         10<sup>-10</sup> meters
-      </li> <b>Flux:</b>
-      The number of particles to hit a sensor in a set amount of time.
-      <li> <b>Modified Julian Data (MJD):</b>
-         Where D is the number of days since midnight on November 17<sup>th</sup> 1858,
-         D + (H + (M + S/60)/60)/24
+    <ul class="list-group">
+    {% for term in glos %}
+
+      <li class="list-group-item">
+        <b>{{term.entry}}</b>
+        <p>{{term.definition}}</p>
       </li>
-      <li> <b>Radial Velocity:</b>
-         The rate of change of the distance between an object and a given point. 
-      </li>
+
+    {% endfor %}
     </ul>
-{% endblock %}
 
+{% endblock %}
