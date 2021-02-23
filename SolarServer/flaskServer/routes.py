@@ -1,4 +1,4 @@
-from flask import render_template, abort, request
+from flask import render_template, abort, request, redirect, url_for
 from flask_mail import Message
 from .indexPlot import homepage_plot
 from .extensions import mongo, mail
@@ -28,8 +28,23 @@ def init_views( server ):
 
     @server.route("/admin/")
     def admin():
-        RV = mongo.db.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        RV = mongo.db.radialvelocity.find({"PUBLIC":"FALSE"}, {"_id": 0, "FILENAME": 1, "MJD": 1})
         return render_template('admin.html', RV=RV)
+
+    @server.route("/glossary/")
+    def glossary():
+        glos = mongo.db.glossary.find()
+        return render_template('glossary.html', glos=glos)
+
+    @server.route("/addTerm/", methods=['POST'])
+    def addTerm():
+
+        entry = request.form['term']
+        definition = request.form['definition']
+
+        mongo.db.glossary.insert_one({"entry":entry, "definition":definition})
+
+        return redirect(url_for('admin'))
 
 
     #Called from requestAccess.html when the form is submitted
@@ -61,7 +76,7 @@ def init_views( server ):
     @server.route('/loginAttempt', methods=['GET', 'POST'])
     def loginAttempt():
         return "<h1>Login Successful.</h1> <a href='/'>home</a>"
-        
+
 
     #~ serve file named in extension
     @server.route('/<string:page_name>/')
