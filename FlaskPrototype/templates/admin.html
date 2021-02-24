@@ -26,13 +26,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Add Files</td>
-          <td>as needed</td>
-          <td>
-            <input type="radio" name="date_public" form="admin">
-          </td>
-        </tr>
+
+        {% for x in range(RV.count()) %}
+          <tr>
+            <td>{{RV[x].FILENAME}}</td>
+            <td>{{RV[x].MJD}}</td>
+            <td>
+              <input type="radio" name="date_public" form="admin">
+            </td>
+          </tr>
+        {% endfor %}
+
       </tbody>
 
     </table>

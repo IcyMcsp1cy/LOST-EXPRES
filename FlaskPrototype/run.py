@@ -1,12 +1,7 @@
 from flask import Flask
-from flaskServer.views import homepage_plot, init_views
-from flaskServer.dashApp import init_dash
+from flaskServer import create_app
 
-server = Flask(__name__, static_folder="./static")
-
-init_views(server)
-
-dash = init_dash( server )
+server = create_app('config.py')
 
 if __name__ == '__main__':
     server.run(debug=True)

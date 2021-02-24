@@ -3,10 +3,12 @@
 {% set title = "Administrator Settings" %}
 
 {% block content %}
-<h1>Admin Page</h1>
+<h1 class="p-3">Admin Page</h1>
 
+<!-- RV Table -->
   <form id="admin"></form>
 
+  <h3 class="p-3">Radial Velocity Data</h3>
   <div class="overflow-scroll table-responsive p-4" style="height:500px;">
     <table class="table table-striped align-middle">
       <thead class="table-dark">
@@ -33,6 +35,8 @@
     </table>
   </div>
 
+<!-- News Table -->
+  <h3 class="p-3">News on Front Page</h3>
   <div class="overflow-scroll table-responsive p-4" style="height:500px;">
     <table class="table table-striped align-middle ">
       <thead class="table-dark">
@@ -57,4 +61,24 @@
   <div class="row justify-content-center p-4">
     <button class="btn btn-lg" type="submit" form="admin">Apply Changes</button>
   </div>
+
+<!-- Glossary Form -->
+  <h3 class="p-3">Add Terms to Glossary</h3>
+
+  <form id="glossaryForm" method="POST" action="{{ url_for('addTerm') }}">
+    <div class="row mb-3">
+      <label for="term" class="col-sm-2 col-form-label">Term</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="term" value="Term" name="term">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label for="definition" class="col-sm-2 col-form-label">Definition</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="definition" name="definition" rows="3"></textarea>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Term</button>
+  </form>
+
 {% endblock %}

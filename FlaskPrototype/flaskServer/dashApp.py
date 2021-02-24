@@ -4,9 +4,13 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table as dt
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, ClientsideFunction
 from plotly.express import scatter
 import pandas as pd
+
+import numpy as np
+import plotly
+import plotly.graph_objs as go
 
 
 #<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -77,7 +81,7 @@ def init_dash( server ):
     external_stylesheets = [dbc.themes.BOOTSTRAP]
 
     app = Dash(
-    __name__,
+    '__main__',
     server=server,
     url_base_pathname='/data/',
     assets_folder='static',
@@ -85,19 +89,49 @@ def init_dash( server ):
     )
 
     data = pd.read_csv('static/Sun.txt')
+
     df = data[data['ACCEPT'] == True]
 
     rv_figure = scatter(df, x="MJD", y="V")
     rv_figure.update_layout(clickmode='event')
 
+    rand_x = np.random.randn(500)
+    rand_y = np.random.randn(500)
+
+    fig = scatter(
+        x= rand_x,
+        y= rand_y,
+    )
 
     app.layout = html.Div([
         navbar,
         html.Br(className='pb-5'),
+        dcc.Store(
+            id='test',
+            data=[{
+                'x': df[['MJD']].to_json(),
+                'y': df[['V']].to_json()
+            }]
+        ),
+        html.Div(
+            id = 'data',
+            children = df.to_json(),
+            className='d-none'
+        ),
+        html.Div(
+            id = 'json',
+        ),
         dcc.Graph(
             id='rv-plot',
             figure=rv_figure,
             className="pt-5"
+        ),
+        dcc.RangeSlider(
+            id='range-slider',
+            min=59000,
+            max=59110,
+            step=10,
+            value=[59010, 59100]
         ),
         html.Div([
             dcc.Markdown("""
@@ -111,63 +145,39 @@ def init_dash( server ):
             dt.DataTable(id='rv-table',
                     columns=[{"name": i, "id": i} for i in df.columns][1::],
                     data=df.to_dict('records')),
-        ], className='d-none'),
+        ], className=''),
         html.Br(className='pb-5'),
     ])
 
+
+
+    app.clientside_callback(
+        output=Output('click-data', 'children'),
+        inputs=[Input('rv-plot', 'clickData'),
+                State('rv-table', 'data')],
+        clientside_function=ClientsideFunction(
+            namespace='graphing',
+            function_name ='clickData'
+        )
+    )
+
+
+
+    app.clientside_callback(
+        output=Output('rv-plot', 'figure'),
+        inputs=[Input('range-slider', 'value'), State('data', 'children')],
+        clientside_function=ClientsideFunction(
+            namespace='graphing',
+            function_name ='zoomfunc'
+        )
+    )
+
     # @app.callback(
-    #     Output('click-data', 'children'),
-    #     Input('basic-interactions', 'clickData'))
-    # def display_hover_data(clickData):
-    #     return dumps(clickData, indent=2)
-
-
-    # app.clientside_callback(
-    #     """
-    #     function(relayoutData) {
-    #         console.log(relayoutData);
-    #         let obj = JSON.stringify(relayoutData);
-    #         return obj;
-    #     }
-    #     """,
-    #     Output('click-data', 'children'),
-    #     Input('rv-plot', 'clickData')
+    #     Output('json', 'children'),
+    #     Input('rv-plot', 'figure')
     # )
-
-    app.clientside_callback(
-        """
-        function(data, scale) {
-            return {
-                'data': data,
-                'layout': {
-                    'yaxis': {'type': scale}
-                }
-            }
-        }
-        """,
-        Output('clientside-graph', 'figure'),
-        Input('rv-plot', 'relayoutData'),
-        State('rv-table', 'data')
-    )
-
-    app.clientside_callback(
-        """
-        function(clickData, table) {
-            if(clickData === undefined) {
-                return;
-            }
-            console.log(table);
-
-            let pointData = clickData.points[0];
-            let data = JSON.stringify(table[pointData.pointIndex].FILENAME)
-
-            return data;
-        }
-        """,
-        Output('click-data', 'children'),
-        Input('rv-plot', 'clickData'),
-        Input('rv-table', 'data')
-    )
+    # def teststuff(figure):
+    #     return dumps([fig], cls=plotly.utils.PlotlyJSONEncoder)
 
     @app.callback(
         Output('spec-container', 'children'),

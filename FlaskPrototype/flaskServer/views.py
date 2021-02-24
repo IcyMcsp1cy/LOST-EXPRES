@@ -1,6 +1,9 @@
 from flask import render_template, abort, request
 from flask_mail import Mail, Message
 from .indexPlot import homepage_plot
+from .extensions import mongo
+
+
 
 def init_views( server ):
 
@@ -25,19 +28,21 @@ def init_views( server ):
 
     @server.route("/admin/")
     def admin():
-        return "<a href='/'>home</a> <h1>Admin Page</h1>"
+        RV = mongo.SolarExpres.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        return render_template('admin.html', RV=RV)
+
 
     #email setup
     mail= Mail(server)
     server.config['MAIL_SERVER']='smtp.gmail.com'
     server.config['MAIL_PORT'] = 465
-    server.config['MAIL_USERNAME'] = 'LOSTEXPRES1@gmail.com'
-    server.config['MAIL_PASSWORD'] = 'Lost2021'
+    server.config['MAIL_USERNAME'] = 'USERNAME'
+    server.config['MAIL_PASSWORD'] = 'PASSWORD'
     server.config['MAIL_USE_TLS'] = False
     server.config['MAIL_USE_SSL'] = True
     mail = Mail(server)
     #Called from requestAccess.html when the form is submitted
-    @server.route("/requestEmail", methods=['POST'])
+    @server.route('/requestEmail', methods=['POST'])
     def requestEmail():
         #save the form inputs as variables
         firstName = request.form['fname']
@@ -51,6 +56,21 @@ def init_views( server ):
         msg.body = "Hello, " + fullName + " has requested researcher access for the LOST telescope.\n" + "Email: " + email + "\nInstitution: " + institution
         mail.send(msg)
         return "Request access form has been sent."
+
+    #Called from forgotPassword.html when the form is submitted
+    @server.route('/forgotPasswordRequest', methods=['GET', 'POST'])
+    def forgotPasswordRequest():
+        #save the form input as a variable
+        email = request.form['email']
+        #send an email using the input parameters in the header and message
+        msg = Message("Forgot Password Email", sender = 'LOSTEXPRES1@gmail.com', recipients = [email])
+        msg.body = "Hello, follow this link to reset your password: WIP"
+        mail.send(msg)
+        return "Forgot password form has been sent."
+
+    @server.route('/loginAttempt', methods=['GET', 'POST'])
+    def loginAttempt():
+        return "<h1>Login Successful.</h1> <a href='/'>home</a>"
 
     #~ serve file named in extension
     @server.route('/<string:page_name>/')

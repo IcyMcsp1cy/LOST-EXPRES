@@ -95,26 +95,6 @@ def init_graphing( server ):
     def getGraph(children):
         if(children == None):
             raise PreventUpdate
-
-        data = mongo.db.onespectrum.find({"FILENAME": "Sun_200911.1062"}, {"_id": 0, "# WAVE": 1, "FLUX": 1})
-
-        data_dict = {
-        'wave': [],
-        'flux': []
-        }
-        count = 0
-        realCount = 0
-        print(data[0]["# WAVE"])
-        for x in data:
-            count += 1
-            if(x["# WAVE"] != '' and count % 10 == 0):
-                data_dict['wave'].append(float(x["# WAVE"]))
-                data_dict['flux'].append(float(x["FLUX"]))
-                realCount += 1
-        print("Get")
-        spec = line(data_dict, x="wave", y="flux", render_mode="webgl")
-        print(realCount)
-        
         return [children,
         dcc.Graph(
             id='spec-plot',
