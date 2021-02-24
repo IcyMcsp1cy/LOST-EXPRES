@@ -102,7 +102,6 @@ def init_graphing( server ):
         )
     )
 
-
     app.clientside_callback(
         output=Output('rv-plot', 'figure'),
         inputs=[Input('date-range', 'start_date'),

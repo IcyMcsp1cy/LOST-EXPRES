@@ -28,6 +28,9 @@ def init_views( server ):
 
     @server.route("/admin/")
     def admin():
+        # RV = mongo.db.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        # return render_template('admin.html', RV=RV)
+
         RV = mongo.db.radialvelocity.find({"PUBLIC":"FALSE"}, {"_id": 0, "FILENAME": 1, "MJD": 1})
         return render_template('admin.html', RV=RV)
 
@@ -45,7 +48,6 @@ def init_views( server ):
         mongo.db.glossary.insert_one({"entry":entry, "definition":definition})
 
         return redirect(url_for('admin'))
-
 
     #Called from requestAccess.html when the form is submitted
     @server.route('/requestEmail', methods=['POST'])
@@ -76,7 +78,6 @@ def init_views( server ):
     @server.route('/loginAttempt', methods=['GET', 'POST'])
     def loginAttempt():
         return "<h1>Login Successful.</h1> <a href='/'>home</a>"
-
 
     #~ serve file named in extension
     @server.route('/<string:page_name>/')

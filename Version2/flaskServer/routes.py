@@ -5,7 +5,6 @@ from .extensions import mongo, mail
 import datetime
 
 
-
 def init_views( server ):
 
     #~ Error Handling
@@ -29,6 +28,9 @@ def init_views( server ):
 
     @server.route("/admin/")
     def admin():
+        # RV = mongo.db.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        # return render_template('admin.html', RV=RV)
+
         RV = mongo.db.radialvelocity.find({"PUBLIC":"FALSE"}, {"_id": 0, "FILENAME": 1, "MJD": 1})
         return render_template('admin.html', RV=RV)
 
