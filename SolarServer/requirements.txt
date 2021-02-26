@@ -7,6 +7,7 @@ flask-mail
 pymongo
 dnspython
 flask-pymongo
+astropy
 #Possibly needed
 pandas
 numpy
