@@ -1,0 +1,145 @@
+{% extends 'sidebar.html' %}
+
+{% set title = "Administrator Settings" %}
+
+{% block content %}
+<h1>Admin Page</h1>
+
+  <form id="admin"></form>
+
+  <div class="overflow-scroll table-responsive p-4" style="height:500px;">
+    <table class="table table-striped align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Radial Velocity Files</th>
+          <th>Date</th>
+          <th>Public Access</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% for x in range(RV.count()) %}
+          <tr>
+            <td>{{RV[x].FILENAME}}</td>
+            <td>{{RV[x].MJD}}</td>
+            <td>
+              <input type="radio" name="date_public" form="admin">
+            </td>
+          </tr>
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+  </div>
+
+  <div class="overflow-scroll table-responsive p-4" style="height:500px;">
+    <table class="table table-striped align-middle ">
+      <thead class="table-dark">
+        <tr>
+          <th>News Files</th>
+          <th>Front Page</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Add Files</td>
+          <td>
+            <input type="radio" name="front_news" form="admin">
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+  <div class="row justify-content-center p-4">
+    <button class="btn btn-lg" type="submit" form="admin">Apply Changes</button>
+  </div>
+
+<body>
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('{{ url_for('static', filename='contact-bg.jpg') }}')">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="page-heading">
+          <h1> Add Post</h1>
+          <span class="subheading">Update News Posts Here:</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <form name="addForm" id="addForm" method="POST" action="{{ url_for('addPost') }}" novalidate>
+        <div class="control-group">
+          <div class="form-group floating-label-form-group controls">
+            <label>Post Title</label>
+            <input type="text" class="form-control" placeholder="Title" name="title" id="title" required data-validation-required-message="Please enter your post's title.">
+            <p class="help-block text-danger"></p>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="form-group floating-label-form-group controls">
+            <label>Subtitle</label>
+            <input type="text" class="form-control" placeholder="Subtitle" name="subtitle" id="subtitle" required data-validation-required-message="Please enter your email address.">
+            <p class="help-block text-danger"></p>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="form-group col-xs-12 floating-label-form-group controls">
+            <label>Author</label>
+            <input type="text" class="form-control" placeholder="Author" name="author" id="author" required data-validation-required-message="Please enter author name.">
+            <p class="help-block text-danger"></p>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="form-group floating-label-form-group controls">
+            <label>Blog Content</label>
+            <textarea rows="5" class="form-control" placeholder="Content" name="content" id="content" required data-validation-required-message="Please enter a message."></textarea>
+            <p class="help-block text-danger"></p>
+          </div>
+        </div>
+        <br>
+        <div id="success"></div>
+        <button type="submit" class="btn btn-primary" id="sendMessageButton">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <p class="copyright text-muted">Copyright &copy; Your Website 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- Bootstrap core JavaScript -->
+<script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
+<!-- Custom scripts for this template -->
+<script src="{{ url_for('static', filename='clean-blog.min.js') }}"></script>
+
+<!-- Contact Form JavaScript -->
+<script src="{{ url_for('static', filename='jqBootstrapValidation.js') }}"></script>
+<script src="{{ url_for('static', filename='contact_me.js') }}"></script>
+
+</body>
+{% endblock %}
