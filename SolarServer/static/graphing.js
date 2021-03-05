@@ -104,23 +104,56 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
             data = JSON.parse(table)
             console.log(data)
-            less = {
-                'wave':[],
-                'flux':[]
-            }
-            for (i = 0; i < data['wave'].length; i=i+res) {
-                less['wave'].push(data['wave'][i]);
-                less['flux'].push(data['flux'][i]);
-            }
 
-            return {
-                'data':[{
+            let index = 0, x_order = [], y_order = [], data_structure = []
+
+            if( data.hasOwnProperty("ORDER")) {
+                for(let order = 0; order < 86; order++) {
+                    while(data['ORDER'][index] <= order) {
+                        if(data['ORDER'][index] === order) {
+                            x_order.push(data['# WAVE'][index])
+                            y_order.push(data['FLUX'][index])
+                        }
+                        index++
+                    }
+
+                    data_structure.push({
+                        "line": { "color": ["#EE3124", "#F8971D", "#FFDD00", "#3DAE2B", "#00AEEF", "#002F87", "#A25EB5"][order%7], "dash": "solid" },
+                        "mode": "lines",
+                        "name": order,
+                        "showlegend": true,
+                        "type": "scattergl",
+                        "x": x_order,
+                        "xaxis": "x",
+                        "y": y_order,
+                        "yaxis": "y"
+                    })
+                    x_order = []
+                    y_order = []
+                }
+            } else {
+
+                less = {
+                    'wave':[],
+                    'flux':[]
+                }
+                for (i = 0; i < data['wave'].length; i=i+res) {
+                    less['wave'].push(data['wave'][i]);
+                    less['flux'].push(data['flux'][i]);
+                }
+
+                data_structure = [{
                     'x': Object.values(less['wave']),
                     'y': Object.values(less['flux']),
                     'xaxis': 'x',
                     'yaxis': 'y',
                     'type': 'linegl',
-                }],
+                }]
+            }
+            
+            
+            return {
+                'data': data_structure,
                 'layout':{
                     'xaxis': {'autoscale': true},
                     'yaxis': {'autoscale': true},
@@ -128,6 +161,6 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     "hovermode": "closest"
                 }
             }
-        }
+        },
     }
 });
