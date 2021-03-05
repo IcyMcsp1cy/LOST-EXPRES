@@ -3,17 +3,17 @@
 {% set title = "Glossary" %}
 
 {% block content %}
-<h1>Glossary</h1>
+    <h1>Glossary</h1>
 
-<ul class="list-group">
+    <ul class="list-group">
     {% for term in glos %}
 
-    <li class="list-group-item">
+      <li class="list-group-item">
         <b>{{term.entry}}</b>
         <p>{{term.definition}}</p>
-    </li>
+      </li>
 
     {% endfor %}
-</ul>
+    </ul>
 
 {% endblock %}

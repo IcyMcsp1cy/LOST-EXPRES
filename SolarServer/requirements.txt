@@ -11,5 +11,3 @@ astropy
 #Possibly needed
 pandas
 numpy
-
-
