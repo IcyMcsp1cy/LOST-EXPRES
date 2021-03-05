@@ -30,6 +30,10 @@ def init_graphing( server ):
     
     data = pd.read_csv('static/Sun.txt')
 
+    data_2d = pd.read_csv('static/2d.csv')[["ORDER", "# WAVE", "FLUX"]]
+
+    figure_2d = line(data_2d, x="# WAVE", y="FLUX", color="ORDER", render_mode="webgl")
+
     df = data[data['ACCEPT'] == True]
     print(type(df[['MJD']]))
 
@@ -122,6 +126,7 @@ def init_graphing( server ):
             function_name ='specfunc'
         )
     )
+
     
 
     @app.callback(
@@ -129,9 +134,15 @@ def init_graphing( server ):
         Input('click-data', 'children')
     )
     def getGraph(children):
-        print("Start")
+
         if(children == None):
             raise PreventUpdate
+
+        print(children)
+
+        if(children == "Sun_200913.1078.fits"):
+            return data_2d.to_json()
+
 
         data = mongo.db.onespectrum.find({"FILENAME": "Sun_200911.1062"}, {"_id": 0, "# WAVE": 1, "FLUX": 1})
 
