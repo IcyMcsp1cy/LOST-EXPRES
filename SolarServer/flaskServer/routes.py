@@ -2,8 +2,8 @@ from flask import render_template, abort, request, redirect, url_for
 from flask_mail import Message
 from .indexPlot import homepage_plot
 from .extensions import mongo, mail
-
-
+import datetime
+from bson.objectid import ObjectId
 
 def init_views( server ):
 
@@ -26,13 +26,18 @@ def init_views( server ):
     def search():
         return "<a href='/'>home</a> <h1>Search Page</h1> "
 
-    @server.route("/admin/")
-    def admin():
-        # RV = mongo.db.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
-        # return render_template('admin.html', RV=RV)
+    @server.route("/adminAddNews/")
+    def adminAddNews():
+        return render_template('adminAddNews.html')
 
-        RV = mongo.db.radialvelocity.find({"PUBLIC":"FALSE"}, {"_id": 0, "FILENAME": 1, "MJD": 1})
-        return render_template('admin.html', RV=RV)
+    @server.route("/adminFileManager/")
+    def adminFileManager():
+        RV = mongo.db.radialvelocity.find({}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        return render_template('adminFileManager.html', RV=RV)
+
+    @server.route("/adminAddToGlossary/")
+    def adminAddToGlossary():
+        return render_template('adminAddToGlossary.html')
 
     @server.route("/glossary/")
     def glossary():
@@ -48,6 +53,38 @@ def init_views( server ):
         mongo.db.glossary.insert_one({"entry":entry, "definition":definition})
 
         return redirect(url_for('admin'))
+
+    @server.route("/admin/")
+    def admin():
+        RV = mongo.db.radialvelocity.find({"PUBLIC":"FALSE"}, {"_id": 0, "FILENAME": 1, "MJD": 1})
+        return render_template('admin.html', RV=RV)
+
+    @server.route("/news/")
+    def news():
+        posts = mongo.db.news.find({})
+        return render_template("news.html",posts=posts)
+
+
+    @server.route('/addPost/', methods=['POST'])
+    def addPost():
+        title = request.form['title']
+        subtitle = request.form['subtitle']
+        author = request.form['author']
+        content = request.form['content']
+        date_posted = datetime.datetime.now()
+        final_date = date_posted.strftime('%B %d, %Y')
+
+        post = mongo.db.news.insert_one({"title":title,"subtitle":subtitle,"author":author,"content":content,"datetime":final_date})
+        return redirect(url_for('admin'))
+
+    @server.route('/post/<post_id>')
+    def post(post_id):
+        post = mongo.db.news.find_one({ "_id": ObjectId(post_id) })
+        return render_template('post.html', post=post)
+
+
+#        return '<h1>Title: {} Subtitle: {} Author: {} Content: {}</h1>'.format(title, subtitle, author, content)
+
 
     #Called from requestAccess.html when the form is submitted
     @server.route('/requestEmail', methods=['POST'])
@@ -78,6 +115,7 @@ def init_views( server ):
     @server.route('/loginAttempt', methods=['GET', 'POST'])
     def loginAttempt():
         return "<h1>Login Successful.</h1> <a href='/'>home</a>"
+        
 
     #~ serve file named in extension
     @server.route('/<string:page_name>/')

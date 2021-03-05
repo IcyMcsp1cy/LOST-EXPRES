@@ -9,9 +9,7 @@ from dash.exceptions import PreventUpdate
 from plotly.express import scatter, line
 import pandas as pd
 from ..extensions import mongo
-from datetime import date
 import json
-from astropy.time import Time
 
 
 url_base = '/data/'
@@ -31,9 +29,6 @@ def init_graphing( server ):
     data = pd.read_csv('static/Sun.txt')
 
     df = data[data['ACCEPT'] == True]
-    print(type(df[['MJD']]))
-
-    df['MJD'] = Time(df[['MJD']], format='mjd').iso
 
     rv_figure = scatter(df, x="MJD", y="V")
     rv_figure.update_layout(clickmode='event')
@@ -48,54 +43,34 @@ def init_graphing( server ):
                     "displaylogo": False,
                     'modeBarButtonsToRemove': ['pan2d','lasso2d', 'autoscale']
                 }
-        ),
-        dcc.DatePickerRange(
-            id='date-range',
-            min_date_allowed=date(2020, 7, 5),
-            max_date_allowed=date(2021, 9, 19),
-            initial_visible_month=date(2020, 12, 5),
-            end_date=date(2020, 9, 18)
-        )]),
+            ),
+        dcc.Input(id="x1", type="number", placeholder="", debounce=True),
+        dcc.Input(id="x2", type="number", placeholder="", debounce=True),
+        html.Br(),
+        dcc.Input(id="y1", type="number", placeholder="", debounce=True),
+        dcc.Input(id="y2", type="number", placeholder="", debounce=True),
+        ]),
 
         html.Div(
-            id = 'rv-data',
+            id = 'data',
             children = df.to_json(),
             className='d-none'
         ),
-        html.Div(
-            id = 'spec-data',
-            children = [],
-            className='d-none'
-        ),
         html.Div([
+            dcc.Markdown("""
+                **Click Data**
+                Click on points in the graph.
+            """),
             html.Pre(id='click-data'),
         ]),
-        html.Div([
-            dcc.Graph(
-            id='spec-plot',
-            className="pt-5"
-        ),
-        dcc.Slider(
-            min=1,
-            max=200,
-            value=100,
-            marks={
-                1: {'label': '1:1', 'style': {'color': '#77b0b1'}},
-                20: {'label': '20:1'},
-                50: {'label': '50:1'},
-                100: {'label': '100:1'},
-                200: {'label': '200:1', 'style': {'color': '#f50'}}
-            },
-            id='resolution'
-        ),
-        ], id='spec-container'),
+        html.Div([], id='spec-container'),
     ])
 
 
     app.clientside_callback(
         output=Output('click-data', 'children'),
         inputs=[Input('rv-plot', 'clickData'),
-                State('rv-data', 'children')],
+                State('data', 'children')],
         clientside_function=ClientsideFunction(
             namespace='graphing',
             function_name ='clickData'
@@ -104,28 +79,20 @@ def init_graphing( server ):
 
     app.clientside_callback(
         output=Output('rv-plot', 'figure'),
-        inputs=[Input('date-range', 'start_date'),
-                Input('date-range', 'end_date'),
-                State('rv-data', 'children')],
+        inputs=[Input('x1', 'value'),
+                Input('x2', 'value'),
+                Input('y1', 'value'),
+                Input('y2', 'value'),
+                State('data', 'children')],
         clientside_function=ClientsideFunction(
             namespace='graphing',
-            function_name ='datefunc'
-        )
-    )
-
-    app.clientside_callback(
-        output=Output('spec-plot', 'figure'),
-        inputs=[Input('resolution', 'value'),
-                Input('spec-data', 'children')],
-        clientside_function=ClientsideFunction(
-            namespace='graphing',
-            function_name ='specfunc'
+            function_name ='zoomfunc'
         )
     )
     
 
     @app.callback(
-        Output('spec-data', 'children'),
+        Output('spec-container', 'children'),
         Input('click-data', 'children')
     )
     def getGraph(children):
@@ -144,32 +111,20 @@ def init_graphing( server ):
         print(data[0]["# WAVE"])
         for x in data:
             count += 1
-            if(x["# WAVE"] != ''):
+            if(x["# WAVE"] != '' and count % 10 == 0):
                 data_dict['wave'].append(float(x["# WAVE"]))
                 data_dict['flux'].append(float(x["FLUX"]))
                 realCount += 1
-        return json.dumps(data_dict)
-
+        print("Get")
+        spec = line(data_dict, x="wave", y="flux", render_mode="webgl")
+        print(realCount)
         
-        
-        # return [children,
-        # dcc.Graph(
-        #     id='spec-plot',
-        #     figure=spec,
-        #     className="pt-5"
-        # ),
-        # dcc.Slider(
-        #     min=1,
-        #     max=200,
-        #     value=100,
-        #     marks={
-        #         1: {'label': '200:1', 'style': {'color': '#77b0b1'}},
-        #         20: {'label': '100:1'},
-        #         50: {'label': '50:1'},
-        #         100: {'label': '20:1'},
-        #         200: {'label': '1:1', 'style': {'color': '#f50'}}
-        #     }
-        # ),]
+        return [children,
+        dcc.Graph(
+            id='spec-plot',
+            figure=spec,
+            className="pt-5"
+        ),]
 
     with server.test_client() as client:
         client.get('/')
