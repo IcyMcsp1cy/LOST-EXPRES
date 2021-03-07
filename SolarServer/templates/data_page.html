@@ -1,0 +1,22 @@
+{% extends 'base_page.html' %}
+
+{% set title = "Graphing" %}
+
+{% block stylesheets %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for("static", filename="sidebar.css" ) }}">
+{% endblock %}
+
+{% block content %}
+<div class="h-100 container">
+    {% raw %}{%app_entry%}{% endraw %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% raw %}
+{%config%}
+{%scripts%}
+{%renderer%}
+{% endraw %}
+{% endblock %}
