@@ -60,107 +60,10 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     "hovermode": "closest"
                 }
             }
-        },
 
-        datefunc: function(start, end, table) {
-            var xrange
-            if(table === undefined) {
-                throw "input undefined"
-            }
-            if(start === undefined) {
-                xrange = {'autoscale': true}
-            } else {
-                xrange = {
-                    'range': [start, end]
-                }
-            }
 
-            data = JSON.parse(table)
-            console.log(start)
-            return {
-                'data':[{
-                    'x': Object.values(data['MJD']),
-                    'y': Object.values(data['V']),
-                    'xaxis': 'x',
-                    'yaxis': 'y',
-                    'type': 'scattergl',
-                    'mode': 'markers'
-                }],
-                'layout':{
-                    'xaxis': xrange,
-                    'yaxis': {'autoscale': true},
-                    'type': 'scattergl',
-                    "hovermode": "closest"
-                }
-            }
 
-            console.log(start)
-            console.log(end)
-        },
-
-        specfunc: function(res, table) {
-            if(table == []) {
-                throw "input undefined"
-            }
-            data = JSON.parse(table)
-            console.log(data)
-
-            let index = 0, x_order = [], y_order = [], data_structure = []
-
-            if( data.hasOwnProperty("ORDER")) {
-                for(let order = 0; order < 86; order++) {
-                    while(data['ORDER'][index] <= order) {
-                        if(data['ORDER'][index] === order) {
-                            x_order.push(data['# WAVE'][index])
-                            y_order.push(data['FLUX'][index])
-                        }
-                        index++
-                    }
-
-                    data_structure.push({
-                        "line": { "color": ["#EE3124", "#F8971D", "#FFDD00", "#3DAE2B", "#00AEEF", "#002F87", "#A25EB5"][order%7], "dash": "solid" },
-                        "mode": "lines",
-                        "name": order,
-                        "showlegend": true,
-                        "type": "scattergl",
-                        "x": x_order,
-                        "xaxis": "x",
-                        "y": y_order,
-                        "yaxis": "y"
-                    })
-                    x_order = []
-                    y_order = []
-                }
-            } else {
-
-                less = {
-                    'wave':[],
-                    'flux':[]
-                }
-                for (i = 0; i < data['wave'].length; i=i+res) {
-                    less['wave'].push(data['wave'][i]);
-                    less['flux'].push(data['flux'][i]);
-                }
-
-                data_structure = [{
-                    'x': Object.values(less['wave']),
-                    'y': Object.values(less['flux']),
-                    'xaxis': 'x',
-                    'yaxis': 'y',
-                    'type': 'linegl',
-                }]
-            }
             
-            
-            return {
-                'data': data_structure,
-                'layout':{
-                    'xaxis': {'autoscale': true},
-                    'yaxis': {'autoscale': true},
-                    'type': 'linegl',
-                    "hovermode": "closest"
-                }
-            }
-        },
+        }
     }
 });
