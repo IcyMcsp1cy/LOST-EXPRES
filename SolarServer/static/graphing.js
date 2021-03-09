@@ -167,17 +167,16 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             console.log(end)
         },
 
-        specfunc: function(res, table) {
+        specfunc: function(res, range, table) {
             if(table == []) {
                 throw "input undefined"
             }
             data = JSON.parse(table)
-            console.log(data)
 
             let index = 0, x_order = [], y_order = [], data_structure = []
 
             if( data.hasOwnProperty("ORDER")) {
-                for(let order = 0; order < 86; order++) {
+                for(let order = range[0]; order < range[1]; order++) {
                     while(data['ORDER'][index] <= order) {
                         if(data['ORDER'][index] === order) {
                             x_order.push(data['# WAVE'][index])

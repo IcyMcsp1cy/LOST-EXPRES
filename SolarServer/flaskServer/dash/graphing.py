@@ -37,7 +37,7 @@ def init_graphing( server ):
     df = data[data['ACCEPT'] == True]
     print(type(df[['MJD']]))
 
-    df['MJD'] = Time(df[['MJD']], format='mjd').iso
+    df['MJD'] = Time(df['MJD'], format='mjd').iso
 
     rv_figure = scatter(df, x="MJD", y="V")
     rv_figure.update_layout(clickmode='event')
@@ -57,7 +57,7 @@ def init_graphing( server ):
             id='date-range',
             min_date_allowed=date(2020, 7, 5),
             max_date_allowed=date(2021, 9, 19),
-            initial_visible_month=date(2020, 12, 5),
+            initial_visible_month=date(2020, 8, 5),
             end_date=date(2020, 9, 18)
         )]),
 
@@ -92,7 +92,21 @@ def init_graphing( server ):
             },
             id='resolution'
         ),
+        dcc.RangeSlider(
+            id='spec-range',
+            min=0,
+            max=85,
+            step=1,
+            value=[45, 50],
+            marks={
+                0: {'label': '0'},
+                45: {'label': '45'},
+                50: {'label': '50'},
+                85: {'label': '85'}
+            }
+        ),
         ], id='spec-container'),
+        html.Br(),
     ])
 
 
@@ -120,6 +134,7 @@ def init_graphing( server ):
     app.clientside_callback(
         output=Output('spec-plot', 'figure'),
         inputs=[Input('resolution', 'value'),
+                Input('spec-range', 'value'),
                 Input('spec-data', 'children')],
         clientside_function=ClientsideFunction(
             namespace='graphing',
