@@ -3,6 +3,7 @@ flask
 plotly
 dash
 dash-bootstrap-components
+dash_daq
 flask-mail
 pymongo
 dnspython
