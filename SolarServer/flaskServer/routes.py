@@ -1,7 +1,9 @@
-from flask import render_template, abort, request, redirect, url_for
+from flask import render_template, abort, request, redirect, url_for, session
+from functools import wraps
 from flask_mail import Message
 from .indexPlot import homepage_plot
 from .extensions import mongo, mail
+from .userClass import User
 import datetime
 from bson.objectid import ObjectId
 
@@ -11,6 +13,15 @@ def init_views( server ):
     @server.errorhandler(404)
     def not_found(e):
         return '<h1>404 not found</h1>', 404
+
+    #Login required decorator
+    def login_required(f):
+        @wraps(f)
+        def wrap(*args, **kwargs):
+            if 'logged_in' in session:
+                return f(*args, **kwargs)
+            else:
+                return redirect('/')
 
     #~ Server Routing
     @server.route('/')
@@ -112,10 +123,44 @@ def init_views( server ):
         mail.send(msg)
         return "Forgot password form has been sent."
 
+    @server.route('/signup', methods=['GET', 'POST'])
+    def signup():
+        email = request.form['email']
+        firstName = request.form['fname']
+        lastName = request.form['lname']
+        institution = request.form['institution']
+        return User().signup(email, firstName, lastName, institution)
+
     @server.route('/loginAttempt', methods=['GET', 'POST'])
     def loginAttempt():
-        return "<h1>Login Successful.</h1> <a href='/'>home</a>"
-        
+        email = request.form['email']
+        password = request.form['password']
+        user = mongo.db.users.find_one({
+            "email": request.form.get('email')
+        })
+        if mongo.db.user.find({"email":email, "password":password}).count() >= 1:
+            User().start_session(user)
+            return redirect('/')
+        else:
+            return "<h1>Login Failed.</h1> <a href='/login'>back</a>"
+
+    @server.route('/logout', methods=['GET', 'POST'])
+    def logout():
+        return User().signout()
+
+    @server.route('/changeEmail', methods=['POST'])
+    def changeEmail():
+        oemail = request.form['oemail']
+        nemail = request.form['nemail']
+        mongo.db.user.update_one({'email':oemail},{"$set":{'email':nemail}})
+        return redirect('/account.html')
+
+    @server.route('/changeInstitution', methods=['POST'])
+    def changeInstitution():
+        oinstitution = request.form['oinstitution']
+        ninstitution = request.form['ninstitution']
+        mongo.db.user.update_one({'institution':oinstitution},{"$set":{'institution':ninstitution}})
+        return redirect('/account.html')
 
     #~ serve file named in extension
     @server.route('/<string:page_name>/')
