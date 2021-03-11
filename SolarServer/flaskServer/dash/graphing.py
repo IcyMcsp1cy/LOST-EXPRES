@@ -12,6 +12,8 @@ from ..extensions import mongo
 from datetime import date
 import json
 from astropy.time import Time
+import dash_daq as daq
+
 
 
 url_base = '/data/'
@@ -52,14 +54,15 @@ def init_graphing( server ):
                     "displaylogo": False,
                     'modeBarButtonsToRemove': ['pan2d','lasso2d', 'autoscale']
                 }
-        ),
-        dcc.DatePickerRange(
-            id='date-range',
-            min_date_allowed=date(2020, 7, 5),
-            max_date_allowed=date(2021, 9, 19),
-            initial_visible_month=date(2020, 8, 5),
-            end_date=date(2020, 9, 18)
-        )]),
+            ),
+            dcc.DatePickerRange(
+                id='date-range',
+                min_date_allowed=date(2020, 7, 5),
+                max_date_allowed=date(2021, 9, 19),
+                initial_visible_month=date(2020, 8, 5),
+                end_date=date(2020, 9, 18)
+            )
+        ]),
 
         html.Div(
             id = 'rv-data',
@@ -74,39 +77,58 @@ def init_graphing( server ):
         html.Div([
             html.Pre(id='click-data'),
         ]),
+
         html.Div([
             dcc.Graph(
             id='spec-plot',
-            className="pt-5"
-        ),
-        dcc.Slider(
-            min=1,
-            max=200,
-            value=100,
-            marks={
-                1: {'label': '1:1', 'style': {'color': '#77b0b1'}},
-                20: {'label': '20:1'},
-                50: {'label': '50:1'},
-                100: {'label': '100:1'},
-                200: {'label': '200:1', 'style': {'color': '#f50'}}
-            },
-            id='resolution'
-        ),
-        dcc.RangeSlider(
-            id='spec-range',
-            min=0,
-            max=85,
-            step=1,
-            value=[45, 50],
-            marks={
-                0: {'label': '0'},
-                45: {'label': '45'},
-                50: {'label': '50'},
-                85: {'label': '85'}
-            }
-        ),
+            className="pt-5",
+            config={
+                    "displaylogo": False,
+                    'modeBarButtonsToRemove': ['pan2d','lasso2d', 'autoscale']
+                }
+            ),
+            html.Div([
+                dcc.Slider(
+                    min=1,
+                    max=200,
+                    value=100,
+                    marks={
+                        1: {'label': '1:1', 'style': {'color': '#77b0b1'}},
+                        20: {'label': '20:1'},
+                        50: {'label': '50:1'},
+                        100: {'label': '100:1'},
+                        200: {'label': '200:1', 'style': {'color': '#f50'}}
+                    },
+                    id='resolution'
+                ),
+                dcc.RangeSlider(
+                    id='spec-range',
+                    min=0,
+                    max=85,
+                    step=1,
+                    value=[45, 50],
+                    marks={
+                        0: {'label': '0'},
+                        45: {'label': '45'},
+                        50: {'label': '50'},
+                        85: {'label': '85'}
+                    }
+                ),
+            ], className='col'),
         ], id='spec-container'),
         html.Br(),
+            daq.ToggleSwitch(
+                label='lin / log',
+                id='log-switch',
+                className='row',
+                labelPosition='bottom'
+            ),
+            daq.ToggleSwitch(
+                label='1D / 2D',
+                id='dim-switch',
+                className='row',
+                labelPosition='bottom'
+            )
     ])
 
 
@@ -135,6 +157,7 @@ def init_graphing( server ):
         output=Output('spec-plot', 'figure'),
         inputs=[Input('resolution', 'value'),
                 Input('spec-range', 'value'),
+                Input('log-switch', 'value'),
                 Input('spec-data', 'children')],
         clientside_function=ClientsideFunction(
             namespace='graphing',
@@ -146,16 +169,16 @@ def init_graphing( server ):
 
     @app.callback(
         Output('spec-data', 'children'),
-        Input('click-data', 'children')
+        Input('click-data', 'children'),
+        Input('dim-switch', 'value')
     )
-    def getGraph(children):
+    def getGraph(children, dim):
 
         if(children == None):
             raise PreventUpdate
 
-        print(children)
-
-        if(children == "Sun_200913.1078.fits"):
+        print(type(dim))
+        if(dim):
             return data_2d.to_json()
 
 
@@ -175,28 +198,7 @@ def init_graphing( server ):
                 data_dict['flux'].append(float(x["FLUX"]))
                 realCount += 1
         return json.dumps(data_dict)
-
-        
-        
-        # return [children,
-        # dcc.Graph(
-        #     id='spec-plot',
-        #     figure=spec,
-        #     className="pt-5"
-        # ),
-        # dcc.Slider(
-        #     min=1,
-        #     max=200,
-        #     value=100,
-        #     marks={
-        #         1: {'label': '200:1', 'style': {'color': '#77b0b1'}},
-        #         20: {'label': '100:1'},
-        #         50: {'label': '50:1'},
-        #         100: {'label': '20:1'},
-        #         200: {'label': '1:1', 'style': {'color': '#f50'}}
-        #     }
-        # ),]
-
+ 
     with server.test_client() as client:
         client.get('/')
         app.index_string = render_template('data_page.html')

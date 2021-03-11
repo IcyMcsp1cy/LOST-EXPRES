@@ -167,12 +167,16 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             console.log(end)
         },
 
-        specfunc: function(res, range, table) {
+        specfunc: function(res, range, log, table) {
             if(table == []) {
                 throw "input undefined"
             }
             data = JSON.parse(table)
 
+            let linlog = "linear"
+            if(log) {
+                linlog = "log"
+            }
             let index = 0, x_order = [], y_order = [], data_structure = []
 
             if( data.hasOwnProperty("ORDER")) {
@@ -188,7 +192,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     data_structure.push({
                         "line": { "color": ["#EE3124", "#F8971D", "#FFDD00", "#3DAE2B", "#00AEEF", "#002F87", "#A25EB5"][order%7], "dash": "solid" },
                         "mode": "lines",
-                        "name": order,
+                        "name": "<b>" + order + "</b>",
                         "showlegend": true,
                         "type": "scattergl",
                         "x": x_order,
@@ -223,10 +227,13 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             return {
                 'data': data_structure,
                 'layout':{
+                    'yaxis': {
+                        'type': linlog,
+                        'autoscale': true},
                     'xaxis': {'autoscale': true},
-                    'yaxis': {'autoscale': true},
                     'type': 'linegl',
-                    "hovermode": "closest"
+                    "hovermode": "closest",
+                    
                 }
             }
         },
