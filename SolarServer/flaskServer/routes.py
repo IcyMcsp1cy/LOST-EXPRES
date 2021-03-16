@@ -156,14 +156,14 @@ def init_views( server ):
         oemail = request.form['oemail']
         nemail = request.form['nemail']
         mongo.db.user.update_one({'email':oemail},{"$set":{'email':nemail}})
-        return redirect('/account.html')
+        return redirect('/account')
 
     @server.route('/changeInstitution', methods=['POST'])
     def changeInstitution():
         oinstitution = request.form['oinstitution']
         ninstitution = request.form['ninstitution']
         mongo.db.user.update_one({'institution':oinstitution},{"$set":{'institution':ninstitution}})
-        return redirect('/account.html')
+        return redirect('/account')
 
     #~ serve file named in extension
     @server.route('/<string:page_name>/')
