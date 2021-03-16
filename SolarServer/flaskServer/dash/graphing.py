@@ -99,36 +99,41 @@ def init_graphing( server ):
                         100: {'label': '100:1'},
                         200: {'label': '200:1', 'style': {'color': '#f50'}}
                     },
-                    id='resolution'
+                    id='resolution',
+                    className='col',
+
                 ),
                 dcc.RangeSlider(
                     id='spec-range',
+                    className='col',
                     min=0,
                     max=85,
                     step=1,
-                    value=[45, 50],
+                    value=[40, 45],
                     marks={
                         0: {'label': '0'},
+                        40: {'label': '40'},
                         45: {'label': '45'},
-                        50: {'label': '50'},
                         85: {'label': '85'}
                     }
                 ),
-            ], className='col'),
+            ], className='row'),
         ], id='spec-container'),
         html.Br(),
+        html.Div([
             daq.ToggleSwitch(
                 label='lin / log',
                 id='log-switch',
-                className='row',
+                className='col',
                 labelPosition='bottom'
             ),
             daq.ToggleSwitch(
                 label='1D / 2D',
                 id='dim-switch',
-                className='row',
+                className='col',
                 labelPosition='bottom'
             )
+        ], className="row")
     ])
 
 
