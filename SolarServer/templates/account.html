@@ -1,0 +1,24 @@
+
+{% extends 'base_page.html' %}
+
+{% set title = "Account" %}
+
+{% block content %}
+<h1>Account</h1>
+<p>Change email address:</p>
+<form action="/changeEmail" method="post" name="changeEmail">
+  <label for="oemail">Old Email:</label><br>
+  <input type="text" id="oemail" name="oemail"><br>
+  <label for="nemail">New Email:</label><br>
+  <input type="text" id="nemail" name="nemail"><br><br>
+  <input type="submit" value="Submit">
+</form>
+<p>Change institution:</p>
+<form action="/changeInstitution" method="post" name="changeInstitution">
+  <label for="oinstitution">Old Institution:</label><br>
+  <input type="text" id="oinstitution" name="oinstitution"><br>
+  <label for="ninstitution">New Institution:</label><br>
+  <input type="text" id="ninstitution" name="ninstitution"><br><br>
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}

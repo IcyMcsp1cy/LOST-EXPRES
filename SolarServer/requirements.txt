@@ -1,0 +1,14 @@
+#Definitely needed
+flask
+plotly
+dash
+dash-bootstrap-components
+dash_daq
+flask-mail
+pymongo
+dnspython
+flask-pymongo
+astropy
+#Possibly needed
+pandas
+numpy

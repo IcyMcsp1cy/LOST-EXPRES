@@ -1,0 +1,36 @@
+{% from "macros.html" import nav_link with context %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-dark text-light border-bottom">
+    <h2 class="font-weight-medium" id="menu-toggle">
+        <a href="{{ title_link | default('/') }}">EXPRES</a>
+    </h2>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+
+            {{ nav_link("/", "Home") }}
+            {{ nav_link("/news", "News") }}
+            {{ nav_link("/data", "Data") }}
+            {{ nav_link("/login", "Login") }}
+            {{ nav_link("/register", "Register") }}
+            {{ nav_link("/admin", "Admin") }}
+            {{ nav_link("/glossary", "Glossary") }}
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Dropdown
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/account">Account</a>
+                    <a class="dropdown-item" href="#">Settings</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
