@@ -4,6 +4,7 @@ from flask_mail import Message
 from .indexPlot import homepage_plot
 from .extensions import mongo, mail
 from .userClass import User
+import pymongo
 import datetime
 from bson.objectid import ObjectId
 
@@ -72,7 +73,7 @@ def init_views( server ):
 
     @server.route("/news/")
     def news():
-        posts = mongo.db.news.find({})
+        posts = mongo.db.news.find().sort('_id', pymongo.DESCENDING)
         return render_template("news.html",posts=posts)
 
 
