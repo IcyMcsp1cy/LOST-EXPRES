@@ -85,9 +85,21 @@ def init_views( server ):
         content = request.form['content']
         date_posted = datetime.datetime.now()
         final_date = date_posted.strftime('%B %d, %Y')
-
         post = mongo.db.news.insert_one({"title":title,"subtitle":subtitle,"author":author,"content":content,"datetime":final_date})
         return redirect(url_for('admin'))
+
+    @server.route("/deleteNews/")
+    def deleteNews():
+        selectedPosts = mongo.db.news.find().sort('_id', pymongo.DESCENDING)
+        return render_template('deleteNews.html', selectedPosts=selectedPosts)
+
+    @server.route('/deletePost/', methods=['POST'])
+    def deletePost():
+        deleted = (request.form['deleted'])
+        print(deleted)
+        mongo.db.news.delete_one(deleted)
+        return redirect(url_for('admin'))
+
 
     @server.route('/post/<post_id>')
     def post(post_id):
