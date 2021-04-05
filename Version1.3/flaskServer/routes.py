@@ -52,7 +52,7 @@ def init_views( server ):
                 g.color = 'danger'
                 
         else:
-            g.user = (None, None, 'guest')
+            g.user = ('Guest', None, 'registeree')
             g.nav = [
                 ['/', 'Home'],
                 ['/news', 'News'],
@@ -121,34 +121,45 @@ def init_views( server ):
         if current_user.is_authenticated:
             return redirect('/')
         form = RegistrationForm()
-        if form.validate_on_submit() and form.validate_email():
+        if form.validate_on_submit():
             user = User.new_user (
                 form.firstName.data, 
                 form.lastName.data, 
                 form.email.data,
                 form.institution.data)
-            if user is None:
-                flash('Please choose a different email')
+            mongo.db.user.insert_one(user.to_json())
+
+            login_user(user)
+
+            fullname = user.firstName + ' ' + user.lastName
+
+            msgHeader = "Request Access Submission from " + fullname
+            #send an email using the input parameters in the header and message
+            msg = Message(msgHeader, sender = 'LOSTEXPRES1@gmail.com', recipients = ['LOSTEXPRES2@gmail.com'])
+            msg.body = "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + user.email + "\nInstitution: " + user.institution
+            mail.send(msg)
+            return redirect(url_for('index'))
+        else:
+            flash('Please choose a different email')
         return render_template('register.html', form=form)
 
 
-    @server.route("/account")
+    @server.route("/account", methods=['GET', 'POST'])
     def account():
         if not current_user.is_authenticated:
             abort(403, forbidden)
         form1 = ChangeEmailForm()
         form2 = ChangeInstitutionForm()
         if form1.validate_on_submit():
-            pass
+            mongo.db.user.update_one({'email': form1.old.data}, {'$set': {'email': form1.new.data}})
         elif form2.validate_on_submit():
-            pass
-        return render_template('account.html', name=g.user['fname'], form1=form1, form2=form2)
+            mongo.db.user.update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'institution': form1.new.data}})
+        return render_template('account.html', form1=form1, form2=form2)
 
     
     # @server.route('/forgotPasswordRequest', methods=['GET', 'POST'])
     # def forgotPasswordRequest():
     #     #save the form input as a variable
-    #     email = request.form['email']
     #     #send an email using the input parameters in the header and message
     #     msg = Message("Forgot Password Email", sender = 'LOSTEXPRES1@gmail.com', recipients = [email])
     #     msg.body = "Hello, follow this link to reset your password: WIP"
@@ -157,17 +168,6 @@ def init_views( server ):
 
 
 
-
-    #TODO forms
-    @server.route('/adminAddNews')
-    def addNews():
-        if not current_user.is_authenticated:
-            abort(403, forbidden)
-        return render_template('admin.html')
-    
-    @server.route("/adminAddToGlossary/")
-    def adminAddToGlossary():
-        return render_template('adminAddToGlossary.html')
 
     @server.route("/news/")
     def news():

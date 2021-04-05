@@ -52,7 +52,7 @@ def init_graphing( server ):
     def update():
         if request.endpoint == url_base:
             app.index_string = render_template(
-                'data_page.html', nav_elements = g.nav,
+                'data_page.html'
             )
 
 

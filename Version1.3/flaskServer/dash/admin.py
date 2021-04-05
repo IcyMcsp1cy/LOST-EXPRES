@@ -35,7 +35,6 @@ def init_admin( server ):
         if str(request.endpoint).startswith(url_base):
             app.index_string = render_template(
                 'admin.html',
-                nav_elements = g.nav,
                 title = date.today()
                 )
     

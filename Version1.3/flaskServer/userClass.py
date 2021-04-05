@@ -10,6 +10,11 @@ import random
 
 from .extensions import mongo, mail, login, JSONEncoder
 
+def generate_password(num):
+            for char in range(abs(num)):
+                password = []
+                password.append(chr(random.randrange(65, 123, 1))) # 12 alphabetic and cased characters
+            return ''.join(password)
 
 class User(UserMixin):
     def __init__(self, 
@@ -20,7 +25,7 @@ class User(UserMixin):
     password,
     accountType,
     _id=None):
-        self._id = uuid4().hex if _id is None else _id
+        self._id = str(ObjectId()) if _id is None else _id
         self.email = email
         self.firstName = firstName
         self.lastName = lastName
@@ -29,8 +34,7 @@ class User(UserMixin):
         self.password = password
 
 
-    @staticmethod
-    def is_authenticated():
+    def is_authenticated(self):
         return True
 
     @staticmethod
@@ -51,17 +55,21 @@ class User(UserMixin):
 
     def to_json(self):
         return {
-            "_id": str(self._id),
+            "_id": ObjectId(self._id),
             "email": self.email,
             "firstName": self.firstName,
             "lastName": self.lastName,
             "institution": self.institution,
+            "password": self.password,
             "type": self.accountType
         }
+
+    
 
     @staticmethod
     def get_user(email):
         u = json.loads(JSONEncoder().encode(mongo.db.user.find_one({"email": email})))
+        print(u)
         if not u:
             return None
         return User(
@@ -73,13 +81,11 @@ class User(UserMixin):
             u['type'],
             u['_id'])
 
+
     @staticmethod
     def new_user(firstName, lastName, email, institution):
 
-        password = "xxxxxxxxxxxx"
-
-        for char in range(12):
-            password[char] = chr(random.randrange(65, 123, 1)) # 12 alphabetic and cased characters
+        password = generate_password(12)
 
         return User(
             firstName,
@@ -88,8 +94,6 @@ class User(UserMixin):
             institution,
             password,
             "registeree",)
-
-
 
 
     @login.user_loader
