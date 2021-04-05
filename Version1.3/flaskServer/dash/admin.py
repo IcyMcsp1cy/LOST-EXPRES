@@ -2,15 +2,18 @@ from flask import render_template, abort, request, redirect, url_for, session, g
 from dash import Dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash_bootstrap_components import themes, Table
+from dash_bootstrap_components import themes, Table, Alert
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
 from flask_wtf.recaptcha.widgets import JSONEncoder
 from plotly.express import scatter
 import pandas as pd
 import dash_table
-from datetime import date
+import uuid
+from datetime import date, datetime
+from bson.objectid import ObjectId
 from ..extensions import mongo, JSONEncoder
+from pymongo import DESCENDING
 
 
 url_base = "/admin/"
@@ -102,6 +105,7 @@ def init_admin( server ):
             className='input-group w-100 form-control pb-2'
         ),
         html.Button('Submit', id='news-submit', className='btn my-2'),
+        html.Div(className='', id='news-alert'),
         html.Br()
     ], className='mb-4')
 
@@ -122,6 +126,7 @@ def init_admin( server ):
             className='input-group w-75 form-control pb-2'
         ),
         html.Button('Submit', id='glos-submit', className='btn my-2'),
+        html.Div(className='', id='glos-alert'),
         html.Br()
     ], className='mb-4')
 
@@ -132,36 +137,177 @@ def init_admin( server ):
         if pathname == url_base + 'news':
             news = list(mongo.db.news.find({}))
             df = pd.DataFrame(eval(JSONEncoder().encode(news)))
-            table = Table.from_dataframe(
-                df[['title', 'author', 'datetime']], 
-                striped=True, 
-                bordered=True, 
-                hover=True
+            table = html.Div([
+                Table.from_dataframe(
+                    df[['title', 'author', 'datetime']], 
+                    striped=True, 
+                    bordered=True, 
+                    hover=True,
                 )
+            ], id='news-table')
             return [news_manager, table,]
 
         elif pathname == url_base + 'glossary':
             glos = list(mongo.db.glossary.find({}))
             df = pd.DataFrame(eval(JSONEncoder().encode(glos)))
-            table = Table.from_dataframe(
-                df[['entry', 'definition', 'datetime']], 
-                striped=True, 
-                bordered=True, 
-                hover=True
+            table = html.Div([
+                Table.from_dataframe(
+                    df[['entry', 'definition', 'datetime']], 
+                    striped=True, 
+                    bordered=True, 
+                    hover=True,
                 )
+            ], id='glos-table')
             return [glos_manager, table,]
 
         else:
             file = list(mongo.db.fs.files.find({}))
             df = pd.DataFrame(eval(JSONEncoder().encode(file)))
-            table = Table.from_dataframe(
-                df[['filename', 'filetype']], 
-                striped=True, 
-                bordered=True, 
-                hover=True
+            table = html.Div([
+                Table.from_dataframe(
+                    df[['filename', 'filetype']], 
+                    striped=True, 
+                    bordered=True, 
+                    hover=True,
                 )
+            ], id='file-table')
             return [file_manager, table,]
 
+
+    @app.callback(
+        [Output('glos-alert', 'children'),
+        Output('glos-table', 'children')],
+        [Input('glos-submit', 'n_clicks')],
+        [State('glos-term', 'value'),
+        State('glos-text', 'value'),
+        State('glos-table', 'children')])
+    def edit_glossary(submit, term, definition, table):
+        if submit is None:
+            raise PreventUpdate
+        for val in [term, definition]:
+            if val is None or val == '':
+                return Alert(
+                    "Please fill out all fields",
+                    id="alert-auto",
+                    is_open=True,
+                    duration=10000,
+                    color='danger'
+                ), table
+
+        entry = mongo.db.glossary.find_one({'entry': term})
+         
+        if(entry):
+            mongo.db.glossary.replace_one(
+                {'_id': entry['_id']},
+                {
+                    '_id': entry['_id'],
+                    'entry': term,
+                    'definition': definition,
+                    'datetime': datetime.now()
+                }
+            )
+        else:
+            entry = {
+                '_id': ObjectId(),
+                'entry': term,
+                'definition': definition,
+                'datetime': datetime.now()
+            }
+
+            mongo.db.glossary.insert_one(
+                {
+                    '_id': entry['_id'],
+                    'entry': term,
+                    'definition': definition,
+                    'datetime': datetime.now()
+                }
+            )
+        
+        news = list(mongo.db.glossary.find({}).sort('datetime', DESCENDING))
+        df = pd.DataFrame(eval(JSONEncoder().encode(news)))
+
+        return Alert(
+            [
+                "Glossary Updated"
+            ],
+            id="alert-auto",
+            is_open=True,
+            duration=10000,
+        ), Table.from_dataframe(
+            df[['entry', 'definition', 'datetime']], 
+            striped=True, 
+            bordered=True, 
+            hover=True,
+        )
+
+    @app.callback(
+        [Output('news-alert', 'children'),
+        Output('news-table', 'children'),],
+        Input('news-submit', 'n_clicks'),
+        State('news-title', 'value'),
+        State('news-subtitle', 'value'),
+        State('news-author', 'value'),
+        State('news-text', 'value'),
+        State('news-table', 'children'))
+    def edit_news(submit, title, subtitle, author, text, table):
+
+        if submit is None:
+            raise PreventUpdate
+        for val in [title, subtitle, author, text]:
+            if val is None or val == '':
+                return Alert(
+                    "Please fill out all fields",
+                    id="alert-auto",
+                    is_open=True,
+                    duration=10000,
+                    color='danger'
+                ), table
+
+        post = mongo.db.news.find_one({'title': title})
+
+         
+        if(post):
+            mongo.db.news.replace_one(
+                {'_id': post['_id']},
+                {
+                    '_id': post['_id'],
+                    'title': title,
+                    'subtitle': subtitle,
+                    'author': author,
+                    'content': text,
+                    'datetime': datetime.now().strftime('%B %d, %Y')
+                }
+            )
+        else:
+            post = {
+                '_id': ObjectId(),
+                'title': title,
+                'subtitle': subtitle,
+                'author': author,
+                'content': text,
+                'datetime': datetime.now().strftime('%B %d, %Y')
+            }
+
+            mongo.db.news.insert_one(post)
+
+        url = url_for('post', post_id=str(post['_id']))
+        
+        news = list(mongo.db.news.find().sort('datetime', DESCENDING))
+        df = pd.DataFrame(eval(JSONEncoder().encode(news)))
+
+        return Alert([
+            "Article posted to ",
+            html.A("this link", href=url, className="alert-link")
+            ],
+            id="alert-auto",
+            is_open=True,
+            duration=10000,
+        ),Table.from_dataframe(
+            df[['title', 'author', 'datetime']], 
+            striped=True, 
+            bordered=True, 
+            hover=True,
+        )
 
 
     @app.callback(

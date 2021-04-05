@@ -85,6 +85,12 @@ def init_views( server ):
             message='Internal Server Error'), 500
 
 
+    #! Page rendering
+    @server.route('/')
+    @server.route('/index')
+    def index():
+        return render_template('index.html')
+
 
     #! User Management
     @server.route('/login', methods=['GET', 'POST'])
@@ -139,15 +145,16 @@ def init_views( server ):
         return render_template('account.html', name=g.user['fname'], form1=form1, form2=form2)
 
     
-    @server.route('/forgotPasswordRequest', methods=['GET', 'POST'])
-    def forgotPasswordRequest():
-        #save the form input as a variable
-        email = request.form['email']
-        #send an email using the input parameters in the header and message
-        msg = Message("Forgot Password Email", sender = 'LOSTEXPRES1@gmail.com', recipients = [email])
-        msg.body = "Hello, follow this link to reset your password: WIP"
-        mail.send(msg)
-        return "Forgot password form has been sent."
+    # @server.route('/forgotPasswordRequest', methods=['GET', 'POST'])
+    # def forgotPasswordRequest():
+    #     #save the form input as a variable
+    #     email = request.form['email']
+    #     #send an email using the input parameters in the header and message
+    #     msg = Message("Forgot Password Email", sender = 'LOSTEXPRES1@gmail.com', recipients = [email])
+    #     msg.body = "Hello, follow this link to reset your password: WIP"
+    #     mail.send(msg)
+    #     return "Forgot password form has been sent."   #! Hi Brooke!
+
 
 
 
@@ -172,17 +179,6 @@ def init_views( server ):
         post = mongo.db.news.find_one({ "_id": ObjectId(post_id) })
         return render_template('post.html', post=post)
 
-
-
-    #! Page rendering
-    @server.route('/')
-    @server.route('/index')
-    def index():
-        return render_template('index.html')
-
-
-
-        
 
     @server.route("/glossary")
     def glossary():
