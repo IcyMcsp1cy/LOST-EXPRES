@@ -2,6 +2,11 @@
 
 {% set title = "Lowell Observatory" %}
 
+{% block stylesheets %}
+    {{ super() }}
+    <link href="{{url_for('static', filename='clean-blog.min.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-lg-6 justify-content-center">

@@ -16,13 +16,8 @@ def create_app(config):
     mongo.init_app(app)
     mail.init_app(app)
     login.init_app(app)
-
-    # for i in fs.find(): # or fs.list()
-    #     print(fs.delete(i._id))
-
     
     
-    print(str(id))
     init_views(app)
     init_dash(app)
 

@@ -98,7 +98,7 @@ def init_views( server ):
                 flash('Invalid username or password')
                 return redirect(url_for('login'))
             login_user(user)
-            print(user.firstName)
+            
             return redirect(url_for('index'))
         return render_template('login.html', title='Sign In', form=form)
     

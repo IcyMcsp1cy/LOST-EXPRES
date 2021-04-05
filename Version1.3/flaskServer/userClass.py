@@ -62,7 +62,6 @@ class User(UserMixin):
     @staticmethod
     def get_user(email):
         u = json.loads(JSONEncoder().encode(mongo.db.user.find_one({"email": email})))
-        print(u)
         if not u:
             return None
         return User(

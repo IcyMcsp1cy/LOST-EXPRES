@@ -129,7 +129,6 @@ def init_admin( server ):
     @app.callback(Output('page-wrapper', 'children'),
                 Input('url', 'pathname'))
     def display_page(pathname):
-        print(pathname)
         if pathname == url_base + 'news':
             news = list(mongo.db.news.find({}))
             df = pd.DataFrame(eval(JSONEncoder().encode(news)))
@@ -154,7 +153,6 @@ def init_admin( server ):
 
         else:
             file = list(mongo.db.fs.files.find({}))
-            print(file)
             df = pd.DataFrame(eval(JSONEncoder().encode(file)))
             table = Table.from_dataframe(
                 df[['filename', 'filetype']], 

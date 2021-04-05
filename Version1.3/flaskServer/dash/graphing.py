@@ -40,32 +40,27 @@ def init_graphing( server ):
     external_stylesheets = [themes.BOOTSTRAP]
 
     app = Dash(
-    '__main__',
-    server=server,
-    url_base_pathname=url_base,
-    assets_folder='static',
-    external_stylesheets=external_stylesheets
+        '__main__',
+        server=server,
+        url_base_pathname=url_base,
+        assets_folder='static',
+        external_stylesheets=external_stylesheets
     )
+
 
     @server.before_request
     def update():
         if request.endpoint == url_base:
             app.index_string = render_template(
                 'data_page.html', nav_elements = g.nav,
-                )
-    
-    print('reading')
+            )
+
+
     data = read_csv(fs.find_one({'filetype':'rv'}))
-    print('writing')
-
-
 
     df = data[data[csv_label['accept']] == True]
 
     df[csv_label['mjd']] = df[csv_label['mjd']].apply(from_mjd)
-    print(df)
-
-
 
  
     app.layout = Div([
@@ -207,8 +202,6 @@ def init_graphing( server ):
     )
     def getGraph(children, dim):
 
-        print('request')
-
         if(children == None):
             raise PreventUpdate
 
@@ -216,10 +209,9 @@ def init_graphing( server ):
             return read_csv(fs.find_one({'filetype':'2d'})).to_json()
 
         test = read_csv(fs.find_one({'filetype':'1d'}))
-        print('sending')
+        
         return test.to_json()
 
     
 
     return app
-
