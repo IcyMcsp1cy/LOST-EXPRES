@@ -50,9 +50,21 @@ def init_views( server ):
                     ['/admin', 'Web Management'],
                 ]
                 g.color = 'danger'
-                
+            else:
+                g.nav = [
+                    ['/', 'Home'],
+                    ['/news', 'News'],
+                    ['/data/', 'Data'],
+                    ['/glossary', 'Glossary'],
+                ]
+                g.drop = None
+                g.color = 'warning'
         else:
-            g.user = ('Guest', None, 'registeree')
+            g.user = {
+                'fname': 'Guest', 
+                'lname': None, 
+                'atype': 'registeree'
+            }
             g.nav = [
                 ['/', 'Home'],
                 ['/news', 'News'],
@@ -122,7 +134,7 @@ def init_views( server ):
             return redirect('/')
         form = RegistrationForm()
         if form.validate_on_submit():
-            user = User.new_user (
+            user = User.new_user(
                 form.firstName.data, 
                 form.lastName.data, 
                 form.email.data,
