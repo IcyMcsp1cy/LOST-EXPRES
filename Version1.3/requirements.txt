@@ -6,6 +6,7 @@ dash-core-components
 dash_daq
 dash-html-components
 dash-table
+dash_extensions
 dnspython
 email-validator
 flask
