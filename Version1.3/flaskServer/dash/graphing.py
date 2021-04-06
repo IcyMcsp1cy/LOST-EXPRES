@@ -1,13 +1,17 @@
 from dash_html_components.Div import Div
 from flask import render_template, request, g
+import dash
 from dash import Dash
 from dash_core_components import (
-    Graph, Slider, RangeSlider, 
+    Graph, Slider, RangeSlider,
     DatePickerRange, Loading)
-from dash_html_components import Div, Pre, Br
+from dash_html_components import Div, Pre, Br, Button
+import dash_bootstrap_components as dbc
 from dash_bootstrap_components import themes
-from dash.dependencies import (Input, 
-    Output, State, ClientsideFunction)
+from dash.dependencies import (Input,
+                               Output, State, ClientsideFunction)
+from dash_extensions import Download
+from dash_extensions.snippets import send_data_frame
 from dash.exceptions import PreventUpdate
 from plotly.express import scatter
 from pandas import read_csv
@@ -18,19 +22,18 @@ from datetime import date
 import dash_daq as daq
 import gridfs
 
-
-
 url_base = '/data/'
+
 
 def from_mjd(num):
     return str(julian.from_jd(num, fmt='mjd'))[0:23]
-    
+
+
 def to_mjd(num):
     return julian.to_jd(date(num), fmt='jd')
 
 
-def init_graphing( server ):
-
+def init_graphing(server):
     fs = gridfs.GridFS(mongo.db)
     # file = open('static/Sun_200912.1113_2d.csv', 'rb')
     # id = fs.put(file,
@@ -47,7 +50,6 @@ def init_graphing( server ):
         external_stylesheets=external_stylesheets
     )
 
-
     @server.before_request
     def update():
         if request.endpoint == url_base:
@@ -55,19 +57,28 @@ def init_graphing( server ):
                 'data_page.html'
             )
 
-
-    data = read_csv(fs.find_one({'filetype':'rv'}))
+    data = read_csv(fs.find_one({'filetype': 'rv'}))
 
     df = data[data[csv_label['accept']] == True]
 
     df[csv_label['mjd']] = df[csv_label['mjd']].apply(from_mjd)
 
- 
     app.layout = Div([
         Loading([
+            Div(
+                id='download-container'
+            ),
+            Button(
+                'Download Radial Velocities',
+                id='btn-download',
+                className='btn btn-primary btn-sm float-right',
+            ),
+            Download(
+                id='download'
+            ),
             DatePickerRange(
                 id='date-range',
-                className='pt-5 d-flex justify-content-end w-100',
+                className='pt-1 d-flex justify-content-end w-100',
                 min_date_allowed=date(2020, 8, 23),
                 max_date_allowed=date(2021, 9, 19),
                 initial_visible_month=date(2020, 8, 23),
@@ -78,17 +89,17 @@ def init_graphing( server ):
                 className="",
                 config={
                     "displaylogo": False,
-                    'modeBarButtonsToRemove': ['pan2d','lasso2d', 'autoscale']
+                    'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'autoscale']
                 }
             ),
         ], type="default", className='d-flex justify-content-end w-100'),
 
         Div(
-            id = 'rv-data',
-            children = df[[csv_label['mjd'], csv_label['velocity'], csv_label['filename']]].to_json(),
+            id='rv-data',
+            children=df[[csv_label['mjd'], csv_label['velocity'], csv_label['filename']]].to_json(),
             className='d-none'
         ),
-        
+
         Div([
             Pre(id='click-data'),
         ]),
@@ -96,19 +107,19 @@ def init_graphing( server ):
         Div([
             Loading([
                 Div(
-                    id = 'spec-data',
-                    children = [],
+                    id='spec-data',
+                    children=[],
                     className='d-none'
                 ),
                 Graph(
-                id='spec-plot',
-                className="pt-0",
-                config={
+                    id='spec-plot',
+                    className="pt-0",
+                    config={
                         "displaylogo": False,
-                        'modeBarButtonsToRemove': ['pan2d','lasso2d', 'autoscale']
+                        'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'autoscale']
                     }
                 ),
-            ], type="default",),
+            ], type="default", ),
             Div([
                 Slider(
                     min=1,
@@ -158,14 +169,13 @@ def init_graphing( server ):
         ], className="row")
     ])
 
-
     app.clientside_callback(
         output=Output('click-data', 'children'),
         inputs=[Input('rv-plot', 'clickData'),
                 State('rv-data', 'children')],
         clientside_function=ClientsideFunction(
             namespace='graphing',
-            function_name ='clickData'
+            function_name='clickData'
         )
     )
 
@@ -176,7 +186,7 @@ def init_graphing( server ):
                 State('rv-data', 'children')],
         clientside_function=ClientsideFunction(
             namespace='graphing',
-            function_name ='datefunc'
+            function_name='datefunc'
         )
     )
 
@@ -188,12 +198,15 @@ def init_graphing( server ):
                 Input('spec-data', 'children')],
         clientside_function=ClientsideFunction(
             namespace='graphing',
-            function_name ='specfunc'
+            function_name='specfunc'
         )
     )
 
-    
-    
+    @app.callback(Output('download', 'data'),
+                  Input('btn-download', 'n_clicks'))
+    def download(n_clicks):
+        if n_clicks > 0:
+            return send_data_frame(df.to_csv, filename="radial_velocities.csv")
 
     @app.callback(
         Output('spec-data', 'children'),
@@ -202,16 +215,14 @@ def init_graphing( server ):
     )
     def getGraph(children, dim):
 
-        if(children == None):
+        if (children == None):
             raise PreventUpdate
 
-        if(dim):
-            return read_csv(fs.find_one({'filetype':'2d'})).to_json()
+        if (dim):
+            return read_csv(fs.find_one({'filetype': '2d'})).to_json()
 
-        test = read_csv(fs.find_one({'filetype':'1d'}))
-        
+        test = read_csv(fs.find_one({'filetype': '1d'}))
+
         return test.to_json()
-
-    
 
     return app
