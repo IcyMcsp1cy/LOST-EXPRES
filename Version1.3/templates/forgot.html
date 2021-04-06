@@ -3,11 +3,29 @@
 {% set title = "Forgot Password" %}
 
 {% block content %}
-<h1>Forgot Password</h1>
-<p>Enter your email address below to reset your password:</p>
-<form action="/forgotPasswordRequest" method="post">
-    <label for="email">email:</label><br>
-    <input type="text" id="email" name="email"><br><br>
-    <input type="submit" value="Submit">
+<div class="myform form col-md-5 mx-auto">
+    <div class="logo mb-3">
+        <div class="col-md-12 text-center">
+           <h1>Forgot Password</h1>
+        </div>
+   </div>
+
+   <div class="form-group">
+     <p>Enter your email address below to obtain your password:</p>
+  </div>
+
+  <form action="/forgot" method="post" onsubmit="submit()">
+  {{ form.csrf_token }}
+
+  <div class="form-group">
+      {{ form.email.label }}
+      <input id="email" class="form-control" name="email" required="" size="32" type="email" value="" placeholder="ex@mple.com">
+  </div>
+    <div class="col-md-12 text-center ">
+        <button type="submit" name="submit" class="btn btn-block mybtn btn-primary tx-tfm">Send Email</button>
+        <br>
+    </div>
 </form>
+
+</div>
 {% endblock %}

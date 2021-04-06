@@ -1,18 +1,19 @@
 from flask import (
-    render_template, abort, 
+    render_template, abort,
     request, redirect, g,
     url_for, session, flash)
 from functools import wraps
 from flask_mail import Message
-from flask_login import (current_user, 
+from flask_login import (current_user,
     login_user, logout_user)
 from .extensions import mongo, mail, login
 from .userClass import User
 from .forms import (
-    LoginForm, 
-    RegistrationForm, 
-    ChangeEmailForm, 
-    ChangeInstitutionForm)
+    LoginForm,
+    RegistrationForm,
+    ChangeEmailForm,
+    ChangeInstitutionForm,
+    ForgotForm)
 from pymongo import DESCENDING
 from bson.objectid import ObjectId
 
@@ -23,8 +24,8 @@ def init_views( server ):
     def getUser():
         if current_user.is_authenticated:
             g.user = {
-                'fname': current_user.firstName, 
-                'lname': current_user.lastName, 
+                'fname': current_user.firstName,
+                'lname': current_user.lastName,
                 'atype': current_user.accountType
             }
             if current_user.accountType == 'researcher':
@@ -50,21 +51,9 @@ def init_views( server ):
                     ['/admin', 'Web Management'],
                 ]
                 g.color = 'danger'
-            else:
-                g.nav = [
-                    ['/', 'Home'],
-                    ['/news', 'News'],
-                    ['/data/', 'Data'],
-                    ['/glossary', 'Glossary'],
-                ]
-                g.drop = None
-                g.color = 'warning'
+
         else:
-            g.user = {
-                'fname': 'Guest', 
-                'lname': None, 
-                'atype': 'registeree'
-            }
+            g.user = ('Guest', None, 'registeree')
             g.nav = [
                 ['/', 'Home'],
                 ['/news', 'News'],
@@ -116,10 +105,10 @@ def init_views( server ):
                 flash('Invalid username or password')
                 return redirect(url_for('login'))
             login_user(user)
-            
+
             return redirect(url_for('index'))
         return render_template('login.html', title='Sign In', form=form)
-    
+
 
     @server.route('/logout')
     def logout():
@@ -134,9 +123,9 @@ def init_views( server ):
             return redirect('/')
         form = RegistrationForm()
         if form.validate_on_submit():
-            user = User.new_user(
-                form.firstName.data, 
-                form.lastName.data, 
+            user = User.new_user (
+                form.firstName.data,
+                form.lastName.data,
                 form.email.data,
                 form.institution.data)
             mongo.db.user.insert_one(user.to_json())
@@ -168,7 +157,28 @@ def init_views( server ):
             mongo.db.user.update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'institution': form1.new.data}})
         return render_template('account.html', form1=form1, form2=form2)
 
-    
+
+    @server.route("/forgot", methods=['GET', 'POST'])
+    def forgot():
+        if current_user.is_authenticated:
+            return redirect('/')
+
+        form = ForgotForm()
+        if form.validate_on_submit():
+            user = User.get_user(form.email.data)
+            if user is None:
+                flash("This email is not registered, please try registering")
+                return redirect("/register")
+
+            msgHeader = "Forgot Password - Lowell Observatory"
+            msg = Message(msgHeader, sender='LOSTEXPRES1@gmail.com', recipients = [user.email])
+            msg.body = "Hello, you have requested your password.\n Your password is: " + user.password
+            mail.send(msg)
+            return redirect(url_for('login'))
+
+        return render_template('forgot.html', form=form)
+
+
     # @server.route('/forgotPasswordRequest', methods=['GET', 'POST'])
     # def forgotPasswordRequest():
     #     #save the form input as a variable
@@ -196,7 +206,3 @@ def init_views( server ):
     def glossary():
         glos = mongo.db.glossary.find()
         return render_template('glossary.html', glos=glos)
-
-
-
-

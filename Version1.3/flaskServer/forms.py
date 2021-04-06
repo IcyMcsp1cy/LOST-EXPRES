@@ -1,7 +1,7 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import (
-    StringField, PasswordField, 
+    StringField, PasswordField,
     SubmitField,
     ValidationError)
 from wtforms.validators import DataRequired, Email
@@ -48,5 +48,11 @@ class ChangeEmailForm(FlaskForm):
 class ChangeInstitutionForm(FlaskForm):
     new = StringField('New Institution', validators=[DataRequired()])
     submit = SubmitField('')
+
+
+class ForgotForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('')
+
 
 #TODO add news, add glossary
