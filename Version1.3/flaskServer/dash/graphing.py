@@ -11,7 +11,7 @@ from dash_bootstrap_components import themes
 from dash.dependencies import (Input,
                                Output, State, ClientsideFunction)
 from dash_extensions import Download
-from dash_extensions.snippets import send_data_frame
+from dash_extensions.snippets import send_data_frame, send_file
 from dash.exceptions import PreventUpdate
 from plotly.express import scatter
 from pandas import read_csv
@@ -66,15 +66,15 @@ def init_graphing(server):
     app.layout = Div([
         Loading([
             Div(
-                id='download-container'
+                id='rv-download-container'
             ),
             Button(
                 'Download Radial Velocities',
-                id='btn-download',
+                id='rv-download',
                 className='btn btn-primary btn-sm float-right',
             ),
             Download(
-                id='download'
+                id='rv-download-data'
             ),
             DatePickerRange(
                 id='date-range',
@@ -93,17 +93,44 @@ def init_graphing(server):
                 }
             ),
         ], type="default", className='d-flex justify-content-end w-100'),
-
         Div(
             id='rv-data',
             children=df[[csv_label['mjd'], csv_label['velocity'], csv_label['filename']]].to_json(),
             className='d-none'
         ),
-
         Div([
             Pre(id='click-data'),
         ]),
-
+        Div([
+            Div([
+                Div(
+                    id='1d-spec-download-container'
+                ),
+                Button(
+                    'Download 1D',
+                    id='1d-spec-download',
+                    className='btn btn-primary btn-sm',
+                ),
+                Download(
+                    id='1d-spec-download-data'
+                ),
+            ], className='px-1'),
+            Div([
+                Div(
+                    id='2d-spec-download-container'
+                ),
+                Button(
+                    'Download 2D',
+                    id='2d-spec-download',
+                    className='btn btn-primary btn-sm',
+                ),
+                Download(
+                    id='2d-spec-download-data'
+                ),
+            ], className="px-1"),
+        ], className="row justify-content-end",),
+        Br(),
+        Br(),
         Div([
             Loading([
                 Div(
@@ -202,11 +229,48 @@ def init_graphing(server):
         )
     )
 
-    @app.callback(Output('download', 'data'),
-                  Input('btn-download', 'n_clicks'))
-    def download(n_clicks):
-        if n_clicks > 0:
+    @app.callback(Output('rv-download-data', 'data'),
+                  Input('rv-download', 'n_clicks'))
+    def rvDownload(n_clicks):
+        if (n_clicks is not None) and (n_clicks > 0):
             return send_data_frame(df.to_csv, filename="radial_velocities.csv")
+
+    @app.callback(Output('1d-spec-download-data', 'data'),
+                  Input('1d-spec-download', 'n_clicks'),
+                  Input('click-data', 'children'))
+    def specDownload(n_clicks, children):
+        if (n_clicks is not None) and (n_clicks > 0) and (children is not None):
+            searchDate = children.split('_')[1]
+            searchDate = searchDate.strip('.fits')
+            try:
+                specData = read_csv(fs.find_one({'filetype': '1d',
+                                                 'filename': {'$regex': '.*' + searchDate + '.*'},
+                                                 }))
+                return send_data_frame(specData.to_csv, filename=searchDate + "1d_spectrum.csv")
+            except:
+                specData = read_csv(fs.find_one({'filetype': '1d',
+                                                 'filename': {'$regex': '.*200912.1113.*'},
+                                                 }))
+                return send_data_frame(specData.to_csv, filename="200912.1113.1d_spectrum.csv")
+
+    @app.callback(Output('2d-spec-download-data', 'data'),
+                  Input('2d-spec-download', 'n_clicks'),
+                  Input('click-data', 'children'))
+    def specDownload(n_clicks, children):
+        if (n_clicks is not None) and (n_clicks > 0) and (children is not None):
+            searchDate = children.split('_')[1]
+            searchDate = searchDate.strip('.fits')
+            try:
+                specData = read_csv(fs.find_one({'filetype': '2d',
+                                                 'filename': {'$regex': '.*' + searchDate + '.*'},
+                                                 }))
+                return send_data_frame(specData.to_csv, filename=searchDate + "2d_spectrum.csv")
+            except:
+                specData = read_csv(fs.find_one({'filetype': '2d',
+                                                 'filename': {'$regex': '.*200912.1113.*'},
+                                                 }))
+                return send_data_frame(specData.to_csv, filename="200912.1113.2d_spectrum.csv")
+
 
     @app.callback(
         Output('spec-data', 'children'),
