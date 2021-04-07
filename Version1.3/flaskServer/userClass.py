@@ -11,10 +11,13 @@ import random
 from .extensions import mongo, mail, login, JSONEncoder
 
 def generate_password(num):
-            for char in range(abs(num)):
-                password = []
-                password.append(chr(random.randrange(65, 123, 1))) # 12 alphabetic and cased characters
-            return ''.join(password)
+    num = 12
+    password = []
+    for char in range(abs(num)):
+        result = random.randrange(65, 117, 1)
+        result += 6 if result > 90 else 0
+        password.append(chr(result))
+    return''.join(password)
 
 class User(UserMixin):
     def __init__(self, 
@@ -69,7 +72,6 @@ class User(UserMixin):
     @staticmethod
     def get_user(email):
         u = json.loads(JSONEncoder().encode(mongo.db.user.find_one({"email": email})))
-        print(u)
         if not u:
             return None
         return User(

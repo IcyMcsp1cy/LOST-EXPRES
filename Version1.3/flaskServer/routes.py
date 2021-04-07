@@ -2,18 +2,11 @@ from flask import (
     render_template, abort,
     request, redirect, g,
     url_for, session, flash)
-from functools import wraps
-from flask_mail import Message
 from flask_login import (current_user,
     login_user, logout_user)
-from .extensions import mongo, mail, login
+from .extensions import mongo, sendMail
 from .userClass import User
-from .forms import (
-    LoginForm,
-    RegistrationForm,
-    ChangeEmailForm,
-    ChangeInstitutionForm,
-    ForgotForm)
+from .forms import *
 from pymongo import DESCENDING
 from bson.objectid import ObjectId
 
@@ -51,9 +44,22 @@ def init_views( server ):
                     ['/admin', 'Web Management'],
                 ]
                 g.color = 'danger'
+            else:
+                g.nav = [
+                    ['/', 'Home'],
+                    ['/news', 'News'],
+                    ['/data/', 'Data'],
+                    ['/glossary', 'Glossary'],
+                ]
+                g.drop = None
+                g.color = 'warning'
 
         else:
-            g.user = ('Guest', None, 'registeree')
+            g.user = {
+                'fname': 'Guest',
+                'lname': '',
+                'atype': 'guest'
+            }
             g.nav = [
                 ['/', 'Home'],
                 ['/news', 'News'],
@@ -69,14 +75,14 @@ def init_views( server ):
     #! Error Handlers
     @server.errorhandler(404)
     def not_found(e):
-        return render_template('error.html', name=g.user['fname']), 404
+        return render_template('error.html'), 404
 
     @server.errorhandler(403)
     def forbidden(e):
         return render_template(
             'error.html',
             code=403,
-            message='Access Forbidden', name=g.user['fname']), 403
+            message='Access Forbidden'), 403
 
     @server.errorhandler(500)
     def internal_error(e):
@@ -134,11 +140,14 @@ def init_views( server ):
 
             fullname = user.firstName + ' ' + user.lastName
 
-            msgHeader = "Request Access Submission from " + fullname
-            #send an email using the input parameters in the header and message
-            msg = Message(msgHeader, sender = 'LOSTEXPRES1@gmail.com', recipients = ['LOSTEXPRES2@gmail.com'])
-            msg.body = "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + user.email + "\nInstitution: " + user.institution
-            mail.send(msg)
+            sendMail(server.config['ADMIN_EMAIL'], "Request Access Submission from " + fullname, 
+                "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
+                user.email + "\nInstitution: " + user.institution)
+
+            sendMail(user.email, "Request Access Submission from " + fullname, 
+                "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
+                user.email + "\nInstitution: " + user.institution)
+
             return redirect(url_for('index'))
         else:
             flash('Please choose a different email')
@@ -170,10 +179,10 @@ def init_views( server ):
                 flash("This email is not registered, please try registering")
                 return redirect("/register")
 
-            msgHeader = "Forgot Password - Lowell Observatory"
-            msg = Message(msgHeader, sender='LOSTEXPRES1@gmail.com', recipients = [user.email])
-            msg.body = "Hello, you have requested your password.\n Your password is: " + user.password
-            mail.send(msg)
+            sendMail(user.email, "Forgot Password - Lowell Observatory",
+                "Hello, you have requested your password.\n Your password is: " + user.password
+            )
+
             return redirect(url_for('login'))
 
         return render_template('forgot.html', form=form)
