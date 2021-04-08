@@ -21,8 +21,13 @@ import julian
 from datetime import date
 import dash_daq as daq
 import gridfs
+from json import dumps
+import plotly
+import plotly.graph_objs as go
 
 url_base = '/data/'
+
+rv_plot = None
 
 
 def from_mjd(num):
@@ -32,6 +37,28 @@ def from_mjd(num):
 def to_mjd(num):
     return julian.to_jd(date(num), fmt='jd')
 
+def rv_plot(fs):
+    data = read_csv(fs.find_one({'filetype': 'rv'}))
+
+    rv = data[data[csv_label['accept']] == True]
+
+    rv[csv_label['mjd']] = rv[csv_label['mjd']].apply(from_mjd)
+
+    # rv_plot = scatter(rv, x=csv_label['mjd'], y=csv_label['velocity'])
+
+    fig = go.Scatter(
+        x= rv[csv_label['mjd']],
+        y= rv[csv_label['velocity']],
+        mode="markers",
+        marker=go.scatter.Marker(
+            opacity=0.6,
+            colorscale="Viridis"
+        )
+    )
+
+    rv_plot.result = dumps([fig], cls=plotly.utils.PlotlyJSONEncoder)
+    return rv
+
 
 def init_graphing(server):
     fs = gridfs.GridFS(mongo.db)
@@ -39,6 +66,7 @@ def init_graphing(server):
     # id = fs.put(file,
     #     filename='Sun_200912.1113.2ds.csv',
     #     filetype='2d')
+    rv = rv_plot(fs)
 
     external_stylesheets = [themes.BOOTSTRAP]
 
@@ -57,11 +85,7 @@ def init_graphing(server):
                 'data_page.html'
             )
 
-    data = read_csv(fs.find_one({'filetype': 'rv'}))
-
-    df = data[data[csv_label['accept']] == True]
-
-    df[csv_label['mjd']] = df[csv_label['mjd']].apply(from_mjd)
+    
 
     app.layout = Div([
         Loading([
@@ -95,7 +119,7 @@ def init_graphing(server):
         ], type="default", className='d-flex justify-content-end w-100'),
         Div(
             id='rv-data',
-            children=df[[csv_label['mjd'], csv_label['velocity'], csv_label['filename']]].to_json(),
+            children=rv[[csv_label['mjd'], csv_label['velocity'], csv_label['filename']]].to_json(),
             className='d-none'
         ),
         Div([
@@ -233,7 +257,7 @@ def init_graphing(server):
                   Input('rv-download', 'n_clicks'))
     def rvDownload(n_clicks):
         if (n_clicks is not None) and (n_clicks > 0):
-            return send_data_frame(df.to_csv, filename="radial_velocities.csv")
+            return send_data_frame(rv.to_csv, filename="radial_velocities.csv")
 
     @app.callback(Output('1d-spec-download-data', 'data'),
                   Input('1d-spec-download', 'n_clicks'),
