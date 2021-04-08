@@ -7,6 +7,7 @@ from flask_login import (current_user,
 from .extensions import mongo, sendMail
 from .userClass import User
 from .forms import *
+from .dash.graphing import rv_plot
 from pymongo import DESCENDING
 from bson.objectid import ObjectId
 
@@ -96,7 +97,7 @@ def init_views( server ):
     @server.route('/')
     @server.route('/index')
     def index():
-        return render_template('index.html')
+        return render_template('index.html', plot=rv_plot.result)
 
 
     #! User Management
