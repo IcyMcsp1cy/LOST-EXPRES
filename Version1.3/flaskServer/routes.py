@@ -10,6 +10,7 @@ from .forms import *
 from .dash.graphing import rv_plot
 from pymongo import DESCENDING
 from bson.objectid import ObjectId
+import pymongo
 
 def init_views( server ):
 
@@ -169,7 +170,7 @@ def init_views( server ):
         return render_template('account.html', form1=form1, form2=form2)
 
     @server.route("/deleteNews/")
-        def deleteNews():
+    def deleteNews():
             selectedPosts = mongo.db.news.find().sort('_id', pymongo.DESCENDING)
             return render_template('deleteNews.html', selectedPosts=selectedPosts)
 
