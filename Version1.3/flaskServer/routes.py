@@ -97,7 +97,8 @@ def init_views( server ):
     @server.route('/')
     @server.route('/index')
     def index():
-        return render_template('index.html', plot=rv_plot.result)
+        post = mongo.db.news.find_one()
+        return render_template('index.html', plot=rv_plot.result, post = post)
 
 
     #! User Management
@@ -167,6 +168,31 @@ def init_views( server ):
             mongo.db.user.update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'institution': form1.new.data}})
         return render_template('account.html', form1=form1, form2=form2)
 
+    @server.route("/deleteNews/")
+        def deleteNews():
+            selectedPosts = mongo.db.news.find().sort('_id', pymongo.DESCENDING)
+            return render_template('deleteNews.html', selectedPosts=selectedPosts)
+
+    @server.route('/deletePost/', methods=['POST'])
+    def deletePost():
+        deleted = request.form.getlist('deleted')
+        for x in deleted:
+            print(x)
+            mongo.db.news.delete_one({"title": x})
+        return redirect(url_for('news'))
+
+    @server.route("/deleteGlossary/")
+    def deleteGlossary():
+        glossaryItems = mongo.db.glossary.find().sort('_id', pymongo.DESCENDING)
+        return render_template('deleteGlossary.html', glossaryItems=glossaryItems)
+
+    @server.route('/deleteItem/', methods=['POST'])
+    def deleteItem():
+        deleted = request.form.getlist('deleted')
+        for x in deleted:
+            print(x)
+            mongo.db.glossary.delete_one({"entry": x})
+        return redirect(url_for('glossary'))
 
     @server.route("/forgot", methods=['GET', 'POST'])
     def forgot():
