@@ -175,15 +175,16 @@
                 <center>LOST EXPRES is creating a web application for the digestion of data coming in from the Lowell Observatory Solar Telescope</center>
             </p>
             <p>
-                Our project is to create a web application for Joe Llama (Astronomer at Lowell Observatory) and his team. The Lowel Observatory Solar Telescope (LOST) is equipped with technology that can read the Radial Velocity of a star, and determine if there is a
-                planet revolving around said star. The ultimate goal will be to find exoplanets similar to Earth, revolving around other stars in the galaxy. They don't have any concrete way to analyze this information, and therefore can't find outliers
-                such as solar flares, star spots, plagues, and granules. This means that it is still being tested on the sun and has not been put into actual practice looking for exoplanets. This will be very useful as they don't currently have a way
-                to digest, share, or organize the data that is being stored.
+                Our project is to create a web application for Joe Llama (Astronomer at Lowell Observatory) and his team.
+                The Lowel Observatory Solar Telescope (LOST) is equipped with technology that can read the Radial Velocity
+                of a star, and determine if there is a planet revolving around said star. The ultimate goal will be to
+                find exoplanets similar to Earth, revolving around other stars in the galaxy. They don't have any concrete
+                way to analyze this information, and therefore can't find outliers such as solar flares,
+                star spots, plagues, and granules. This means that it is still being tested on the sun and has
+                not been put into actual practice looking for exoplanets. This will be very useful as they don't
+                currently have a way to digest, share, or organize the data that is being stored.
             </p>
 
-            <br>
-            <h5>Current Work Flow:</h5>
-            <img src="resources\CurrentWorkFlow.png" alt="Current Work Flow">
             <br>
         </div>
 
@@ -192,6 +193,7 @@
         <div id="content-requirements" class="inactive">
             <h2>Requirements</h2>
 
+            <br>
             <h5>Graphing</h5>
             <p>
                 Dr.Llama's main request is to graph the data he is collecting. The graphs we are being asked to create
@@ -216,20 +218,25 @@
                 <dd> - Downloading a file of the data</dd>
             </dl>
             <br>
+            <center><img src="resources\SystemDiagram.png" alt="System Diagram"></center>
+            <br>
             <h5>User Access</h5>
             <p>
                 Our client also wants there to be seperate user levels for the public, other researchers, and himself the admin.
                 While most things will be the same for every level.
             </p>
             <dl>
-              <dt></dt>
-                <dd> - </dd>
-            </dl>
-            <br>
-            <h5>Uploading</h5>
-            <dl>
-              <dt></dt>
-                <dd> - </dd>
+              <dt>Public</dt>
+                <dd> - Access to limited data in the graphing section</dd>
+                <dd> - Has the ability to sign up as researcher</dd>
+              <dt>Researcher</dt>
+                <dd> - Login required</dd>
+                <dd> - Access to full data collection in the graphing section</dd>
+              <dt>Admin</dt>
+                <dd> - Login required</dd>
+                <dd> - Access to full data collection in the graphing section</dd>
+                <dd> - Ability to upload more files</dd>
+                <dd> - Manages the site through an admin page</dd>
             </dl>
             <br><br>
         </div>
@@ -316,10 +323,89 @@
 
         <div id="content-solutions" class="inactive">
             <h2>Solution</h2>
+            <br>
+
+            <h4>Home Screen</h4>
             <p>
-                Solutions Page
+              At the top of the page is the navigation bar, this will allow you to access
+              the rest of the website. These pages include the data, news, glossary, and sign in.
+              The admin can set which news article is displayed on the homescreen, highlighting
+              the exiting research discovery he has made that week.
             </p>
-            <h3> Under Construction </h3>
+            <p>Home Page</p>
+            <center><img src="resources\Home Page.PNG" alt="Home Page"></center>
+            <br><br>
+
+            <h4>Graphing</h4>
+            <p>
+              The following are examples of the graphing we have implemented for Dr.Llama.
+              From the radial veloicity graph you can select a point to view the specturms,
+              and by using the toggle the user can swap between 1D and 2D Spectrums. All
+              of the graphs also have the ability to zoom in and out, as well as download
+              the data of the graph.
+            </p>
+            <p>Radial Velocity Graph</p>
+            <center><img src="resources\Radial Velocity Graph.PNG" alt="Radial Velocity Graph" style="width:800px;height:400px;"></center>
+            <br>
+            <p>1 Dimensional Spectrum Graph</p>
+            <center><img src="resources\1D Spectrum.PNG" alt="1D Spectrum Graph" style="width:800px;height:400px;"></center>
+            <br>
+            <p>2 Dimensional Spectrum Graph</p>
+            <center><img src="resources\2D Spectrum.PNG" alt="2D Spectrum Graph" style="width:800px;height:400px;"></center>
+            <br><br>
+
+            <h4>User Login</h4>
+            <p>
+              For researchers and admin they will have to sign in. If new to the site, from the signin
+              page they can register to become a researcher. This includes giving their name,
+              the instituation they are from, and an email. This registration form is sent to
+              admin and they will approve or not approve the request. Once approved, the researcher will
+              be emailed their password to the site.
+            </p>
+            <p>Login Page</p>
+            <center><img src="resources\Login Screen.PNG" alt="Login"></center>
+            <br>
+            <p>Requesting Access</p>
+            <center><img src="resources\Request Access Form.PNG" alt="Request Access Form"></center>
+            <br><br>
+
+            <h4>News</h4>
+            <p>
+              After discussion Dr.Llama wanted a way to share more information about his project with
+              the public. We decided that a great way would be a blog styled news page. From the News pages
+              a user can click an article title and will be taken to the full article to read.
+            </p>
+            <p>News Page</p>
+            <center><img src="resources\News Page.PNG" alt="Main News Page"></center>
+            <br>
+            <p>News Post</p>
+            <center><img src="resources\News Post.PNG" alt="News Post"></center>
+            <br><br>
+
+            <h4>Glossary</h4>
+            <p>
+              During the project there was a learning curve with terminology, this prompted the idea
+              for a glossary list. This way Dr.Llama can use full terminology in his articles without
+              having to explain every time.
+            </p>
+            <p>Glossary Page</p>
+            <center><img src="resources\Glossary Page.PNG" alt="Glossary Page"></center>
+            <br><br>
+
+            <h4>Admin Management</h4>
+            <p>
+              Once an admin is logged into the website they will have access to the management
+              section of the site. All of this is stored in one place allowing the admin
+              easy accessiblity. From here they can add new posts and glossary terms, delete them
+              if need be, and manage the graphing section. There is a data selector to limit
+              the data the public can see as well as the ability to add new files so they can
+              be added to the database as well.
+            </p>
+            <p>Admin Page</p>
+            <center><img src="resources\Admin Page.PNG" alt="Admin Page"></center>
+            <br>
+
+            <br><br>
 
         </div>
 
