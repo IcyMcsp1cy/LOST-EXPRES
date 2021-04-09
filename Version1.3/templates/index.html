@@ -3,22 +3,61 @@
 {% set title = "Lowell Observatory" %}
 
 {% block stylesheets %}
-    {{ super() }}
-    <link href="{{url_for('static', filename='clean-blog.min.css') }}" rel="stylesheet">
+{{ super() }}
+<link href="{{url_for('static', filename='clean-blog.min.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <div class="row">
+
+    <div class="col-lg-6 justify-content-md-center">
+        <h3 class="text-center">News of the Week</h3>
+        <!-- Page Header -->
+        <header class="masthead" style="background-image: url('{{ url_for('static', filename='post-bg.jpg') }}')">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="post-heading">
+                            <h1>{{post.title}} </h1>
+                            <h2 class="subheading">{{post.subtitle}}</h2>
+                            <span class="meta">Posted by
+              <a href="#">{{post.author}}</a>
+              on {{post.datetime}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Post Content -->
+        <article>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <p>{{post.content}}</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <p class="copyright text-muted">Copyright &copy; Your Website 2020</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
     <div class="col-lg-6 justify-content-center">
         <h3 class="text-center">Radial Velocity Graph</h3>
         <div id="graph"></div>
-    </div>
-    <div class="col-lg-6 justify-content-md-center">
-        <h3 class="text-center">News of the Week</h3>
-
-        <div class="row justify-content-center">
-        {% include 'article.html' %}
-        </div>
     </div>
 </div>
 
@@ -28,7 +67,7 @@
 {{ super() }}
 <script type="text/javascript">
     var graphs = {{plot | safe}};
-    
+
     Plotly.plot('graph',graphs,{});
 </script>
 {% endblock %}

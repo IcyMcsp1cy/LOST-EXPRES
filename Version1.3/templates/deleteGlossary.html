@@ -1,0 +1,41 @@
+<!--News deletion -->
+{% extends 'sidebar.html' %}
+
+{% set title = "News Post Deletion" %}
+
+{% block content %}
+<h1 style = "text-align: center; text-decoration: underline;">Glossary Item Deletion</h1>
+<div class="overflow-scroll table-responsive p-4" style="height:500px;">
+    <form name="deleteForm" id="deleteForm" method="POST" action="{{ url_for('deleteItem') }}" novalidate>
+        <table class="table table-striped align-middle" >
+            <thead class="table-dark">
+            <th>Glossary Items</th>
+            <th></th>
+            </thead>
+            <tbody>
+
+
+            {%for x in range(glossaryItems.count())%}
+            <tr>
+                <td>{{glossaryItems[x].entry}}</td>
+                <td>
+                    <input type="checkbox" name="deleted" id="deleted" value="{{glossaryItems[x].entry}}">
+                </td>
+            </tr>
+
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+        <button class="btn btn-lg" type="submit" name="admin">Delete Post</button>
+    </form>
+</div>
+
+
+
+<div class="row justify-content-center p-4">
+
+</div>
+{% endblock %}
