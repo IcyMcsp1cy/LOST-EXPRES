@@ -100,7 +100,7 @@ window.onload = function () {
             line_linked: {
                 enable: true,
                 distance: 65,
-                color: "#FAEAA7",
+                color: "#FC9E4F",
                 opacity: 0.8,
                 width: 1
             },
