@@ -98,7 +98,7 @@ def init_views( server ):
     @server.route('/')
     @server.route('/index')
     def index():
-        post = mongo.db.news.find_one()
+        post = mongo.db.news.find_one({ 'locationtype': "homepage"})
         return render_template('index.html', plot=rv_plot.result, post = post)
 
 
@@ -142,20 +142,26 @@ def init_views( server ):
             login_user(user)
 
             fullname = user.firstName + ' ' + user.lastName
+            addUser = "http://127.0.0.1:5000/addUser/" + user.email
+            messageBody = "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + user.email + "\nInstitution: " + user.institution + "\nAdd user with this link: " + addUser
 
-            sendMail(server.config['ADMIN_EMAIL'], "Request Access Submission from " + fullname, 
-                "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
-                user.email + "\nInstitution: " + user.institution)
+            sendMail(server.config['ADMIN_EMAIL'], "Request Access Submission from " + fullname,
+                messageBody)
 
-            sendMail(user.email, "Request Access Submission from " + fullname, 
-                "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
-                user.email + "\nInstitution: " + user.institution)
+            sendMail(user.email, "Request Access Submission from " + fullname,
+                messageBody)
 
-            return redirect(url_for('index'))
+            return render_template('successRegister.html')
         else:
             flash('Please choose a different email')
         return render_template('register.html', form=form)
 
+    @server.route('/addUser/<email_id>', methods=['GET', 'POST'])
+    def addUser(email_id):
+        current_email = email_id
+        current_user = User.get_user(current_email)
+        mongo.db.user.update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'type': "researcher"}})
+        return render_template('successAddUser.html')
 
     @server.route("/account", methods=['GET', 'POST'])
     def account():
@@ -181,6 +187,23 @@ def init_views( server ):
             print(x)
             mongo.db.news.delete_one({"title": x})
         return redirect(url_for('news'))
+
+    @server.route("/setNewsHomePage/")
+    def setNewsHomePage():
+            selectedPosts = mongo.db.news.find().sort('_id', pymongo.DESCENDING)
+            return render_template('setNewsHomePage.html', selectedPosts=selectedPosts)
+
+    @server.route('/setNewsPost/', methods=['POST'])
+    def setNewsPost():
+        mongo.db.news.update_many(
+            {},
+            { '$set': { "locationtype": "default" } },
+        )
+        setNews = request.form.getlist('setNews')
+        for x in setNews:
+            print(x)
+            mongo.db.news.update_one({'title': x}, {'$set': {'locationtype': "homepage"}})
+        return redirect(url_for('index'))
 
     @server.route("/deleteGlossary/")
     def deleteGlossary():
