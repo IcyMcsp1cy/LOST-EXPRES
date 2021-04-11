@@ -37,7 +37,7 @@ def init_admin( server ):
                 'admin.html',
                 title = date.today()
                 )
-    
+
 
     app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
@@ -138,9 +138,9 @@ def init_admin( server ):
             df = pd.DataFrame(eval(JSONEncoder().encode(news)))
             table = html.Div([
                 Table.from_dataframe(
-                    df[['title', 'author', 'datetime']], 
-                    striped=True, 
-                    bordered=True, 
+                    df[['title', 'author', 'datetime']],
+                    striped=True,
+                    bordered=True,
                     hover=True,
                 )
             ], id='news-table')
@@ -151,9 +151,9 @@ def init_admin( server ):
             df = pd.DataFrame(eval(JSONEncoder().encode(glos)))
             table = html.Div([
                 Table.from_dataframe(
-                    df[['entry', 'definition', 'datetime']], 
-                    striped=True, 
-                    bordered=True, 
+                    df[['entry', 'definition', 'datetime']],
+                    striped=True,
+                    bordered=True,
                     hover=True,
                 )
             ], id='glos-table')
@@ -164,9 +164,9 @@ def init_admin( server ):
             df = pd.DataFrame(eval(JSONEncoder().encode(file)))
             table = html.Div([
                 Table.from_dataframe(
-                    df[['filename', 'filetype']], 
-                    striped=True, 
-                    bordered=True, 
+                    df[['filename', 'filetype']],
+                    striped=True,
+                    bordered=True,
                     hover=True,
                 )
             ], id='file-table')
@@ -194,7 +194,7 @@ def init_admin( server ):
                 ), table
 
         entry = mongo.db.glossary.find_one({'entry': term})
-         
+
         if(entry):
             mongo.db.glossary.replace_one(
                 {'_id': entry['_id']},
@@ -221,7 +221,7 @@ def init_admin( server ):
                     'datetime': datetime.now()
                 }
             )
-        
+
         news = list(mongo.db.glossary.find({}).sort('datetime', DESCENDING))
         df = pd.DataFrame(eval(JSONEncoder().encode(news)))
 
@@ -233,9 +233,9 @@ def init_admin( server ):
             is_open=True,
             duration=10000,
         ), Table.from_dataframe(
-            df[['entry', 'definition', 'datetime']], 
-            striped=True, 
-            bordered=True, 
+            df[['entry', 'definition', 'datetime']],
+            striped=True,
+            bordered=True,
             hover=True,
         )
 
@@ -264,7 +264,7 @@ def init_admin( server ):
 
         post = mongo.db.news.find_one({'title': title})
 
-         
+
         if(post):
             mongo.db.news.replace_one(
                 {'_id': post['_id']},
@@ -274,7 +274,8 @@ def init_admin( server ):
                     'subtitle': subtitle,
                     'author': author,
                     'content': text,
-                    'datetime': datetime.now().strftime('%B %d, %Y')
+                    'datetime': datetime.now().strftime('%B %d, %Y'),
+                    'locationtype': "default"
                 }
             )
         else:
@@ -284,13 +285,14 @@ def init_admin( server ):
                 'subtitle': subtitle,
                 'author': author,
                 'content': text,
-                'datetime': datetime.now().strftime('%B %d, %Y')
+                'datetime': datetime.now().strftime('%B %d, %Y'),
+                'locationtype': "default"
             }
 
             mongo.db.news.insert_one(post)
 
         url = url_for('post', post_id=str(post['_id']))
-        
+
         news = list(mongo.db.news.find().sort('datetime', DESCENDING))
         df = pd.DataFrame(eval(JSONEncoder().encode(news)))
 
@@ -302,9 +304,9 @@ def init_admin( server ):
             is_open=True,
             duration=10000,
         ),Table.from_dataframe(
-            df[['title', 'author', 'datetime']], 
-            striped=True, 
-            bordered=True, 
+            df[['title', 'author', 'datetime']],
+            striped=True,
+            bordered=True,
             hover=True,
         )
 
