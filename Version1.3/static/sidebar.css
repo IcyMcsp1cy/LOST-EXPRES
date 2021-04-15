@@ -4,6 +4,48 @@
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-simple-sidebar/blob/master/LICENSE)
  */
 
+ tr {
+   height: 40px !important;
+   min-height: 40px !important;
+ }
+
+ th {
+   color: red !important;
+   padding-right: 2ch !important;
+ }
+
+ td {
+   padding-right: 2ch !important;
+ }
+
+.border {
+  border: 3px solid !important;
+}
+
+.border-danger {
+  border-color: #dc3545!important;
+}
+
+.border-primary {
+  border-color: #007bff!important;
+}
+
+.border-warning {
+  border-color: #ffc107!important;
+}
+
+.dash-fixed-content tr:hover {
+  color: red;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.dash-fixed-content tr th:hover {
+  color: red;
+  opacity: 0.5;
+  cursor: auto;
+}
+
  #wrapper {
     overflow-x: hidden;
  }

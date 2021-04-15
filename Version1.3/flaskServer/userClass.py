@@ -3,7 +3,6 @@ from flask_login import UserMixin
 from werkzeug.security import (
     generate_password_hash, 
     check_password_hash)
-from uuid import uuid4
 from bson.objectid import ObjectId
 import json
 import random
@@ -36,8 +35,8 @@ class User(UserMixin):
         self.accountType = accountType
         self.password = password
 
-
-    def is_authenticated(self):
+    @staticmethod
+    def is_authenticated():
         return True
 
     @staticmethod
@@ -95,7 +94,7 @@ class User(UserMixin):
             email,
             institution,
             password,
-            "registeree",)
+            "unverified",)
 
 
     @login.user_loader
