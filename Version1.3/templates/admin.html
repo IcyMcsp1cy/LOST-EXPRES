@@ -1,17 +1,58 @@
-{% extends 'sidebar.html' %}
+{% extends 'base_page.html' %}
+{% from "macros.html" import side_link with context %}
 
 {% set title = "Admin" %}
+{% set title_link = "#" %}
 
-{% block content %}
-<div class='h-100 container'>
-    {% raw %}{%app_entry%}{% endraw %}
+{% block body %}
+<div class="d-flex h-100" id="wrapper">
+    <!-- Sidebar -->
+    <div class="bg-dark border-right-dark sticky-top" id="sidebar-wrapper">
+        <div class="list-group list-group-flush">
+            {{ side_link("/admin/", "User Manager") }}
+            {{ side_link("/admin/news", "News Editor") }}
+            {{ side_link("/admin/files", "File Management") }}
+            {{ side_link("/admin/glossary", "Glossary Editor") }}
+
+
+        </div>
+    </div>
+
+    <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+    </script>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div class="overflow-auto h-100" id="page-content-wrapper">
+
+        {% include 'navbar.html' %}
+        <br>
+        <main role="main" class="container">
+            {% block content %}
+            {% raw %}{%app_entry%}{% endraw %}
+            {% endblock content %}
+        </main>
+    </div>
 </div>
-{% endblock %}
+
+<script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
+{% endblock body %}
+
 
 {% block scripts %}
     {% raw %}
     {%config%}
     {%scripts%}
     {%renderer%}
-    {% endraw %}
+    {% endraw %}  
+    <link rel="stylesheet" href="{{ url_for("static", filename="sidebar.css" ) }}">
 {% endblock %}

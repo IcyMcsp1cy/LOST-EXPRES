@@ -1,7 +1,7 @@
 from flask import (
     render_template, abort,
-    request, redirect, g,
-    url_for, session, flash)
+    redirect, g,
+    url_for, flash)
 from flask_login import (current_user,
     login_user, logout_user)
 from .extensions import mongo, sendMail
@@ -10,7 +10,6 @@ from .forms import *
 from .dash.graphing import rv_plot
 from pymongo import DESCENDING
 from bson.objectid import ObjectId
-import pymongo
 
 def init_views( server ):
 
@@ -49,11 +48,11 @@ def init_views( server ):
             else:
                 g.nav = [
                     ['/', 'Home'],
-                    ['/news', 'News'],
                     ['/data/', 'Data'],
+                    ['/news', 'News'],
                     ['/glossary', 'Glossary'],
                 ]
-                g.drop = None
+                g.drop = []
                 g.color = 'warning'
 
         else:
@@ -64,8 +63,8 @@ def init_views( server ):
             }
             g.nav = [
                 ['/', 'Home'],
-                ['/news', 'News'],
                 ['/data/', 'Data'],
+                ['/news', 'News'],
                 ['/glossary', 'Glossary'],
                 ['/login', 'Sign In'],
             ]
@@ -98,7 +97,7 @@ def init_views( server ):
     @server.route('/')
     @server.route('/index')
     def index():
-        post = mongo.db.news.find_one({ 'locationtype': "homepage"})
+        post = mongo.db.news.find_one({'location': 'home'})
         return render_template('index.html', plot=rv_plot.result, post = post)
 
 
@@ -142,26 +141,20 @@ def init_views( server ):
             login_user(user)
 
             fullname = user.firstName + ' ' + user.lastName
-            addUser = "http://127.0.0.1:5000/addUser/" + user.email
-            messageBody = "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + user.email + "\nInstitution: " + user.institution + "\nAdd user with this link: " + addUser
 
-            sendMail(server.config['ADMIN_EMAIL'], "Request Access Submission from " + fullname,
-                messageBody)
+            sendMail(server.config['ADMIN_EMAIL'], "Request Access Submission from " + fullname, 
+                "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
+                user.email + "\nInstitution: " + user.institution)
 
-            sendMail(user.email, "Request Access Submission from " + fullname,
-                messageBody)
+            sendMail(user.email, "Request Access Submission from " + fullname, 
+                "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
+                user.email + "\nInstitution: " + user.institution)
 
-            return render_template('successRegister.html')
+            return redirect(url_for('index'))
         else:
             flash('Please choose a different email')
         return render_template('register.html', form=form)
 
-    @server.route('/addUser/<email_id>', methods=['GET', 'POST'])
-    def addUser(email_id):
-        current_email = email_id
-        current_user = User.get_user(current_email)
-        mongo.db.user.update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'type': "researcher"}})
-        return render_template('successAddUser.html')
 
     @server.route("/account", methods=['GET', 'POST'])
     def account():
@@ -175,48 +168,6 @@ def init_views( server ):
             mongo.db.user.update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'institution': form1.new.data}})
         return render_template('account.html', form1=form1, form2=form2)
 
-    @server.route("/deleteNews/")
-    def deleteNews():
-            selectedPosts = mongo.db.news.find().sort('_id', pymongo.DESCENDING)
-            return render_template('deleteNews.html', selectedPosts=selectedPosts)
-
-    @server.route('/deletePost/', methods=['POST'])
-    def deletePost():
-        deleted = request.form.getlist('deleted')
-        for x in deleted:
-            print(x)
-            mongo.db.news.delete_one({"title": x})
-        return redirect(url_for('news'))
-
-    @server.route("/setNewsHomePage/")
-    def setNewsHomePage():
-            selectedPosts = mongo.db.news.find().sort('_id', pymongo.DESCENDING)
-            return render_template('setNewsHomePage.html', selectedPosts=selectedPosts)
-
-    @server.route('/setNewsPost/', methods=['POST'])
-    def setNewsPost():
-        mongo.db.news.update_many(
-            {},
-            { '$set': { "locationtype": "default" } },
-        )
-        setNews = request.form.getlist('setNews')
-        for x in setNews:
-            print(x)
-            mongo.db.news.update_one({'title': x}, {'$set': {'locationtype': "homepage"}})
-        return redirect(url_for('index'))
-
-    @server.route("/deleteGlossary/")
-    def deleteGlossary():
-        glossaryItems = mongo.db.glossary.find().sort('_id', pymongo.DESCENDING)
-        return render_template('deleteGlossary.html', glossaryItems=glossaryItems)
-
-    @server.route('/deleteItem/', methods=['POST'])
-    def deleteItem():
-        deleted = request.form.getlist('deleted')
-        for x in deleted:
-            print(x)
-            mongo.db.glossary.delete_one({"entry": x})
-        return redirect(url_for('glossary'))
 
     @server.route("/forgot", methods=['GET', 'POST'])
     def forgot():
@@ -238,15 +189,6 @@ def init_views( server ):
 
         return render_template('forgot.html', form=form)
 
-
-    # @server.route('/forgotPasswordRequest', methods=['GET', 'POST'])
-    # def forgotPasswordRequest():
-    #     #save the form input as a variable
-    #     #send an email using the input parameters in the header and message
-    #     msg = Message("Forgot Password Email", sender = 'LOSTEXPRES1@gmail.com', recipients = [email])
-    #     msg.body = "Hello, follow this link to reset your password: WIP"
-    #     mail.send(msg)
-    #     return "Forgot password form has been sent."   #! Hi Brooke!
 
 
 

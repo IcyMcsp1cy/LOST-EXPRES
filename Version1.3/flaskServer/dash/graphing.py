@@ -1,12 +1,10 @@
 from dash_html_components.Div import Div
 from flask import render_template, request, g
-import dash
 from dash import Dash
 from dash_core_components import (
     Graph, Slider, RangeSlider,
     DatePickerRange, Loading)
 from dash_html_components import Div, Pre, Br, Button
-import dash_bootstrap_components as dbc
 from dash_bootstrap_components import themes
 from dash.dependencies import (Input,
                                Output, State, ClientsideFunction)
@@ -14,7 +12,7 @@ from dash_extensions import Download
 from dash_extensions.snippets import send_data_frame, send_file
 from dash.exceptions import PreventUpdate
 from plotly.express import scatter
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 from ..extensions import mongo
 from ..config import csv_label
 import julian
@@ -23,6 +21,7 @@ import dash_daq as daq
 import gridfs
 from json import dumps
 import plotly
+import time
 import plotly.graph_objs as go
 
 url_base = '/data/'
@@ -31,16 +30,22 @@ rv_plot = None
 
 
 def from_mjd(num):
-    return str(julian.from_jd(num, fmt='mjd'))[0:23]
+    return str(julian.from_jd(float(num), fmt='mjd'))[0:23]
 
 
 def to_mjd(num):
-    return julian.to_jd(date(num), fmt='jd')
+    return julian.to_jd(date(num), fmt='mjd')
 
 def rv_plot(fs):
-    data = read_csv(fs.find_one({'filetype': 'rv'}))
 
+    guy = mongo.db.user.find_one({'type': 'admin'})
+
+    data = read_csv(fs.find_one({'filetype': 'rv'}))
     rv = data[data[csv_label['accept']] == True]
+
+    data = DataFrame.from_dict(mongo.db.radialvelocity.find({}))
+    rv = data[['MJD', 'V', 'FILENAME']]
+
 
     rv[csv_label['mjd']] = rv[csv_label['mjd']].apply(from_mjd)
 
@@ -125,38 +130,33 @@ def init_graphing(server):
         Div([
             Pre(id='click-data'),
         ]),
-        Div([
-            Div([
-                Div(
-                    id='1d-spec-download-container'
-                ),
-                Button(
-                    'Download 1D',
-                    id='1d-spec-download',
-                    className='btn btn-primary btn-sm',
-                ),
-                Download(
-                    id='1d-spec-download-data'
-                ),
-            ], className='px-1'),
-            Div([
-                Div(
-                    id='2d-spec-download-container'
-                ),
-                Button(
-                    'Download 2D',
-                    id='2d-spec-download',
-                    className='btn btn-primary btn-sm',
-                ),
-                Download(
-                    id='2d-spec-download-data'
-                ),
-            ], className="px-1"),
-        ], className="row justify-content-end",),
+        
         Br(),
         Br(),
         Div([
             Loading([
+                Div([
+                    Div([
+                        Button(
+                            'Download 1D',
+                            id='1d-spec-download',
+                            className='btn btn-primary btn-sm',
+                        ),
+                        Download(
+                            id='1d-spec-download-data'
+                        ),
+                    ], className='d-none'),
+                    Div([
+                        Button(
+                            'Download 2D',
+                            id='2d-spec-download',
+                            className='btn btn-primary btn-sm',
+                        ),
+                        Download(
+                            id='2d-spec-download-data'
+                        ),
+                    ], className="d-none"),
+                ], className="row justify-content-end", id="spec-download-container"),
                 Div(
                     id='spec-data',
                     children=[],
@@ -298,6 +298,7 @@ def init_graphing(server):
 
     @app.callback(
         Output('spec-data', 'children'),
+        Output('spec-download-container', 'children'),
         Input('click-data', 'children'),
         Input('dim-switch', 'value')
     )
@@ -306,11 +307,32 @@ def init_graphing(server):
         if (children == None):
             raise PreventUpdate
 
+        download = [
+            Div([
+                Button(
+                    'Download 1D',
+                    id='1d-spec-download',
+                    className='btn btn-primary btn-sm',
+                ),
+                Download(
+                    id='1d-spec-download-data'
+                ),
+            ], className='px-1'),
+            Div([
+                Button(
+                    'Download 2D',
+                    id='2d-spec-download',
+                    className='btn btn-primary btn-sm',
+                ),
+                Download(
+                    id='2d-spec-download-data'
+                ),
+            ], className="px-1"),
+        ]
+
         if (dim):
-            return read_csv(fs.find_one({'filetype': '2d'})).to_json()
+            return read_csv(fs.find_one({'filetype': '2d'})).to_json(), download
 
-        test = read_csv(fs.find_one({'filetype': '1d'}))
-
-        return test.to_json()
+        return read_csv(fs.find_one({'filetype': '1d'})).to_json(), download
 
     return app
