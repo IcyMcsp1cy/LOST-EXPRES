@@ -1,4 +1,3 @@
-from re import T
 from flask import render_template, abort, request, redirect, url_for, session, g
 from dash import Dash, callback_context
 from flask_login import current_user
