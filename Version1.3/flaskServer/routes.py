@@ -4,7 +4,7 @@ from flask import (
     url_for, flash)
 from flask_login import (current_user,
     login_user, logout_user)
-from .extensions import mongo, sendMail
+from .extensions import mongo, sendMail, collection
 from .userClass import User
 from .forms import *
 from .dash.graphing import rv_plot
@@ -97,7 +97,7 @@ def init_views( server ):
     @server.route('/')
     @server.route('/index')
     def index():
-        post = mongo.db.news.find_one({'location': 'home'})
+        post = collection('news').find_one({'location': "home"})
         return render_template('index.html', plot=rv_plot.result, post = post)
 
 
@@ -114,7 +114,7 @@ def init_views( server ):
                 return redirect(url_for('login'))
             login_user(user)
 
-            return redirect(url_for('index'))
+            return redirect('/')
         return render_template('login.html', title='Sign In', form=form)
 
 
@@ -136,11 +136,12 @@ def init_views( server ):
                 form.lastName.data,
                 form.email.data,
                 form.institution.data)
-            mongo.db.user.insert_one(user.to_json())
+            collection('user').insert_one(user.to_json())
 
             login_user(user)
 
             fullname = user.firstName + ' ' + user.lastName
+            messageBody = "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + user.email + "\nInstitution: " + user.institution + "\n"
 
             sendMail(server.config['ADMIN_EMAIL'], "Request Access Submission from " + fullname, 
                 "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
@@ -150,7 +151,7 @@ def init_views( server ):
                 "Hello, " + fullname + " has requested researcher access for the LOST telescope.\n" + "Email: " + 
                 user.email + "\nInstitution: " + user.institution)
 
-            return redirect(url_for('index'))
+            return redirect('/')
         else:
             flash('Please choose a different email')
         return render_template('register.html', form=form)
@@ -163,9 +164,9 @@ def init_views( server ):
         form1 = ChangeEmailForm()
         form2 = ChangeInstitutionForm()
         if form1.validate_on_submit():
-            mongo.db.user.update_one({'email': form1.old.data}, {'$set': {'email': form1.new.data}})
+            collection('user').update_one({'email': form1.old.data}, {'$set': {'email': form1.e_new.data}})
         elif form2.validate_on_submit():
-            mongo.db.user.update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'institution': form1.new.data}})
+            collection('user').update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'institution': form2.i_new.data}})
         return render_template('account.html', form1=form1, form2=form2)
 
 
@@ -190,21 +191,18 @@ def init_views( server ):
         return render_template('forgot.html', form=form)
 
 
-
-
-
-    @server.route("/news/")
+    @server.route("/news")
     def news():
-        posts = mongo.db.news.find().sort('_id', DESCENDING)
+        posts = collection('news').find().sort('_id', DESCENDING)
         return render_template("news.html",posts=posts)
 
     @server.route('/post/<post_id>')
     def post(post_id):
-        post = mongo.db.news.find_one({ "_id": ObjectId(post_id) })
+        post = collection('news').find_one({ "_id": ObjectId(post_id) })
         return render_template('post.html', post=post)
 
 
     @server.route("/glossary")
     def glossary():
-        glos = mongo.db.glossary.find()
+        glos = collection('glossary').find()
         return render_template('glossary.html', glos=glos)

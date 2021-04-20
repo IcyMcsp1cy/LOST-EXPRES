@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 import json
 import random
 
-from .extensions import mongo, mail, login, JSONEncoder
+from .extensions import login, JSONEncoder, collection
 
 def generate_password(num):
     num = 12
@@ -70,7 +70,7 @@ class User(UserMixin):
 
     @staticmethod
     def get_user(email):
-        u = json.loads(JSONEncoder().encode(mongo.db.user.find_one({"email": email})))
+        u = json.loads(JSONEncoder().encode(collection('user').find_one({"email": email})))
         if not u:
             return None
         return User(
@@ -99,7 +99,7 @@ class User(UserMixin):
 
     @login.user_loader
     def load_user(id):
-        u = json.loads(JSONEncoder().encode(mongo.db.user.find_one({"_id": ObjectId(id)})))
+        u = json.loads(JSONEncoder().encode(collection('user').find_one({"_id": ObjectId(id)})))
         if not u:
             return None
         return User(

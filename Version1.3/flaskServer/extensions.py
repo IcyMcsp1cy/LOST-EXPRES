@@ -8,6 +8,11 @@ from datetime import datetime
 
 mongo = PyMongo()
 
+def collection(collection):
+    if not current_app.config['TESTING']:
+        return mongo.db[collection]
+    return mongo.db['test_' + collection]
+
 
 mail= Mail()
 login=LoginManager()
