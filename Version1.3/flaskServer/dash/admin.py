@@ -7,6 +7,7 @@ from dash_bootstrap_components import themes, Table, Alert, Card, CardBody, Card
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
 from flask_wtf.recaptcha.widgets import JSONEncoder
+from pandas.core.frame import DataFrame
 from plotly.express import scatter
 import pandas as pd
 import dash_table
@@ -564,13 +565,16 @@ def init_admin( server ):
     @app.callback(
         Output('user-alert', 'children'),
         Output('user-table', 'data'),
+        Output('user-display', 'className'),
         Input('user-verify', 'n_clicks'),
         Input('user-reject', 'n_clicks'),
         Input('user-purge', 'n_clicks'),
+        Input('user-table', 'active_cell'),
         State('user-email', 'children'),
         State('user-table', 'data'))
-    def editUser(verify, reject, purge, email, table):
+    def editUser(verify, reject, purge, active, email, table):
         changed_id = [p['prop_id'] for p in callback_context.triggered][0]
+        df_table = DataFrame(table)
         if 'user-verify' in changed_id:
             if email is None or email == '':
                 return Alert(
@@ -579,7 +583,7 @@ def init_admin( server ):
                     is_open=True,
                     duration=10000,
                     color='danger'
-                ), table.to_dict('records')
+                ), df_table.to_dict('records'), ''
                     
 
             entry = collection('user').find_one({'email': email})
@@ -598,14 +602,15 @@ def init_admin( server ):
                     is_open=True,
                     duration=10000,
                     color='danger'
-                ), table.to_dict('records')
+                ), df_table.to_dict('records'), ''
 
-            
-            fullname = entry.firstName + ' ' + entry.lastName
-            messageBody = "Hello, " + fullname + " has been granted researcher access for the LOST telescope.\n" + "Email: " + entry.email + "\nInstitution: " + entry.institution + "\n"
+            fullname = entry['firstName'] + ' ' + entry['lastName']
+            messageBody = "Hello, " + fullname + " has been granted researcher access for the LOST telescope.\n" + (
+                "Email: " + entry['email']+ "\nInstitution: " + entry['institution'] + "\n\nThis is your generated password:\n\n"
+                + entry['password'])
 
                 
-            sendMail(entry.email, "Database Access Granted to " + fullname,
+            sendMail(entry['email'], "Database Access Granted to " + fullname,
             messageBody)
 
             result = list(collection('user').find({}))
@@ -616,7 +621,7 @@ def init_admin( server ):
                 id="alert-auto",
                 is_open=True,
                 duration=10000,
-            ), df.to_dict('records')
+            ), df.to_dict('records'), ''
         elif 'user-reject' in changed_id:
             result = collection('user').find_one({'email': email})
             if(result):
@@ -640,7 +645,7 @@ def init_admin( server ):
                 )
             news = list(collection('user').find())
             df = pd.DataFrame(eval(JSONEncoder().encode(news)))
-            return alert, df.to_dict('records')
+            return alert, df.to_dict('records'), 'd-none'
 
         elif 'user-purge' in changed_id:
             removed = collection('user').remove({'type': 'unverified'})
@@ -652,7 +657,9 @@ def init_admin( server ):
                 is_open=True,
                 duration=10000,
                 color='danger'
-            ), df.to_dict('records')
+            ), df.to_dict('records'), ''
+        elif 'user-table' in changed_id:
+            return '', df_table.to_dict('records'), ''
         else:
             raise PreventUpdate
 
@@ -670,7 +677,6 @@ def init_admin( server ):
             date_string = date_object.strftime('%B %d, %Y')
 
             entries = list(collection('radialvelocity').find())
-            print(entries[0])
             for entry in entries:
                 collection('radialvelocity').update_one(
                     {'_id': entry['_id']},
