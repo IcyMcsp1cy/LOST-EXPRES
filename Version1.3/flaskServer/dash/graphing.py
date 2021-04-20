@@ -9,11 +9,10 @@ from dash_bootstrap_components import themes
 from dash.dependencies import (Input,
                                Output, State, ClientsideFunction)
 from dash_extensions import Download
-from dash_extensions.snippets import send_data_frame, send_file
+from dash_extensions.snippets import send_data_frame
 from dash.exceptions import PreventUpdate
-from plotly.express import scatter
 from pandas import read_csv, DataFrame
-from ..extensions import mongo
+from ..extensions import collection, mongo
 from ..config import csv_label
 import julian
 from datetime import date
@@ -36,43 +35,35 @@ def from_mjd(num):
 def to_mjd(num):
     return julian.to_jd(date(num), fmt='mjd')
 
-def rv_plot(fs):
+def rv_plot(server):
+    with server.app_context():
+        entries = list(collection('radialvelocity').find())
+        data = DataFrame(entries)
 
-    guy = mongo.db.user.find_one({'type': 'admin'})
+        rv = data[data['PUBLIC'] == True]
+        rv[csv_label['mjd']] = rv[csv_label['mjd']].apply(from_mjd)
 
-    data = read_csv(fs.find_one({'filetype': 'rv'}))
-    rv = data[data[csv_label['accept']] == True]
-
-    data = DataFrame.from_dict(mongo.db.radialvelocity.find({}))
-    rv = data[['MJD', 'V', 'FILENAME']]
-
-
-    rv[csv_label['mjd']] = rv[csv_label['mjd']].apply(from_mjd)
-
-    # rv_plot = scatter(rv, x=csv_label['mjd'], y=csv_label['velocity'])
-
-    fig = go.Scatter(
-        x= rv[csv_label['mjd']],
-        y= rv[csv_label['velocity']],
-        mode="markers",
-        marker=go.scatter.Marker(
-            opacity=0.6,
-            colorscale="Viridis"
+        fig = go.Scatter(
+            x= rv[csv_label['mjd']],
+            y= rv[csv_label['velocity']],
+            mode="markers",
+            marker=go.scatter.Marker(
+                opacity=0.6,
+                colorscale="Viridis"
+            )
         )
-    )
 
-    rv_plot.result = dumps([fig], cls=plotly.utils.PlotlyJSONEncoder)
-    return rv
+        rv_plot.result = dumps([fig], cls=plotly.utils.PlotlyJSONEncoder)
+        rv_plot.data = rv
+        return rv
+
 
 
 def init_graphing(server):
     fs = gridfs.GridFS(mongo.db)
-    # file = open('static/Sun_200912.1113_2d.csv', 'rb')
-    # id = fs.put(file,
-    #     filename='Sun_200912.1113.2ds.csv',
-    #     filetype='2d')
-    rv = rv_plot(fs)
-
+    
+    rv = rv_plot(server)
+    
     external_stylesheets = [themes.BOOTSTRAP]
 
     app = Dash(
@@ -85,140 +76,148 @@ def init_graphing(server):
 
     @server.before_request
     def update():
+        
         if request.endpoint == url_base:
             app.index_string = render_template(
                 'data_page.html'
             )
+            rv = rv_plot.data
+            app.layout = Div([
+                Loading([
+                    Div(
+                        id='rv-download-container'
+                    ),
+                    Button(
+                        'Download Radial Velocities',
+                        id='rv-download',
+                        className='btn btn-primary btn-sm float-right',
+                    ),
+                    Download(
+                        id='rv-download-data'
+                    ),
+                    DatePickerRange(
+                        id='date-range',
+                        className='pt-1 d-flex justify-content-end w-100',
+                        min_date_allowed=date(2020, 8, 23),
+                        max_date_allowed=date(2021, 9, 19),
+                        initial_visible_month=date(2020, 8, 23),
+                        end_date=date(2020, 9, 18)
+                    ),
+                    Graph(
+                        id='rv-plot',
+                        className="",
+                        config={
+                            "displaylogo": False,
+                            'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'autoscale']
+                        }
+                    ),
+                ], type="default", className='d-flex justify-content-end w-100'),
+                Div(
+                    id='rv-data',
+                    children=rv[[csv_label['mjd'], csv_label['velocity'], csv_label['filename']]].to_json(),
+                    className='d-none'
+                ),
+                Div([
+                    Pre(id='click-data'),
+                ]),
+                
+                Br(),
+                Br(),
+                Div([
+                    Loading([
+                        Div([
+                            Div([
+                                Button(
+                                    'Download 1D',
+                                    id='1d-spec-download',
+                                    className='btn btn-primary btn-sm',
+                                ),
+                                Download(
+                                    id='1d-spec-download-data'
+                                ),
+                            ], className='d-none'),
+                            Div([
+                                Button(
+                                    'Download 2D',
+                                    id='2d-spec-download',
+                                    className='btn btn-primary btn-sm',
+                                ),
+                                Download(
+                                    id='2d-spec-download-data'
+                                ),
+                            ], className="d-none"),
+                        ], className="row justify-content-end d-none", id="spec-download-container"),
+                        Div(
+                            id='spec-data',
+                            children=[],
+                            className='d-none'
+                        ),
+                        Graph(
+                            id='spec-plot',
+                            className="pt-0",
+                            config={
+                                "displaylogo": False,
+                                'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'autoscale']
+                            }
+                        ),
+                    ], type="default", ),
+                    Div([
+                        Div([
+                            'Resolution\n',
+                            
+                        ],
+                        id='label'),
+                        
+                        Slider(
+                            min=1,
+                            max=200,
+                            value=100,
+                            marks={
+                                1: {'label': '1:1', 'style': {'color': '#77b0b1'}},
+                                20: {'label': '20:1'},
+                                50: {'label': '50:1'},
+                                100: {'label': '100:1'},
+                                200: {'label': '200:1', 'style': {'color': '#f50'}}
+                            },
+                            id='resolution',
+                            className='col',
+                        ),
+                        RangeSlider(
+                            id='spec-range',
+                            className='col d-none',
+                            min=0,
+                            max=85,
+                            step=1,
+                            value=[40, 45],
+                            marks={
+                                0: {'label': '0'},
+                                40: {'label': '40'},
+                                45: {'label': '45'},
+                                85: {'label': '85'}
+                            }
+                        ),
+                    ], className='row'),
+                ], id='spec-container'),
+                Br(),
+                Div([
+                    daq.ToggleSwitch(
+                        label='lin / log',
+                        id='log-switch',
+                        className='col',
+                        labelPosition='bottom'
+                    ),
+                    daq.ToggleSwitch(
+                        label='1D / 2D',
+                        id='dim-switch',
+                        className='col',
+                        labelPosition='bottom'
+                    )
+                ], className="row")
+            ])
 
     
 
-    app.layout = Div([
-        Loading([
-            Div(
-                id='rv-download-container'
-            ),
-            Button(
-                'Download Radial Velocities',
-                id='rv-download',
-                className='btn btn-primary btn-sm float-right',
-            ),
-            Download(
-                id='rv-download-data'
-            ),
-            DatePickerRange(
-                id='date-range',
-                className='pt-1 d-flex justify-content-end w-100',
-                min_date_allowed=date(2020, 8, 23),
-                max_date_allowed=date(2021, 9, 19),
-                initial_visible_month=date(2020, 8, 23),
-                end_date=date(2020, 9, 18)
-            ),
-            Graph(
-                id='rv-plot',
-                className="",
-                config={
-                    "displaylogo": False,
-                    'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'autoscale']
-                }
-            ),
-        ], type="default", className='d-flex justify-content-end w-100'),
-        Div(
-            id='rv-data',
-            children=rv[[csv_label['mjd'], csv_label['velocity'], csv_label['filename']]].to_json(),
-            className='d-none'
-        ),
-        Div([
-            Pre(id='click-data'),
-        ]),
-        
-        Br(),
-        Br(),
-        Div([
-            Loading([
-                Div([
-                    Div([
-                        Button(
-                            'Download 1D',
-                            id='1d-spec-download',
-                            className='btn btn-primary btn-sm',
-                        ),
-                        Download(
-                            id='1d-spec-download-data'
-                        ),
-                    ], className='d-none'),
-                    Div([
-                        Button(
-                            'Download 2D',
-                            id='2d-spec-download',
-                            className='btn btn-primary btn-sm',
-                        ),
-                        Download(
-                            id='2d-spec-download-data'
-                        ),
-                    ], className="d-none"),
-                ], className="row justify-content-end", id="spec-download-container"),
-                Div(
-                    id='spec-data',
-                    children=[],
-                    className='d-none'
-                ),
-                Graph(
-                    id='spec-plot',
-                    className="pt-0",
-                    config={
-                        "displaylogo": False,
-                        'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'autoscale']
-                    }
-                ),
-            ], type="default", ),
-            Div([
-                Slider(
-                    min=1,
-                    max=200,
-                    value=100,
-                    marks={
-                        1: {'label': '1:1', 'style': {'color': '#77b0b1'}},
-                        20: {'label': '20:1'},
-                        50: {'label': '50:1'},
-                        100: {'label': '100:1'},
-                        200: {'label': '200:1', 'style': {'color': '#f50'}}
-                    },
-                    id='resolution',
-                    className='col',
-
-                ),
-                RangeSlider(
-                    id='spec-range',
-                    className='col',
-                    min=0,
-                    max=85,
-                    step=1,
-                    value=[40, 45],
-                    marks={
-                        0: {'label': '0'},
-                        40: {'label': '40'},
-                        45: {'label': '45'},
-                        85: {'label': '85'}
-                    }
-                ),
-            ], className='row'),
-        ], id='spec-container'),
-        Br(),
-        Div([
-            daq.ToggleSwitch(
-                label='lin / log',
-                id='log-switch',
-                className='col',
-                labelPosition='bottom'
-            ),
-            daq.ToggleSwitch(
-                label='1D / 2D',
-                id='dim-switch',
-                className='col',
-                labelPosition='bottom'
-            )
-        ], className="row")
-    ])
+    app.layout = Div([])
 
     app.clientside_callback(
         output=Output('click-data', 'children'),
@@ -262,7 +261,7 @@ def init_graphing(server):
     @app.callback(Output('1d-spec-download-data', 'data'),
                   Input('1d-spec-download', 'n_clicks'),
                   Input('click-data', 'children'))
-    def specDownload(n_clicks, children):
+    def oneDownload(n_clicks, children):
         if (n_clicks is not None) and (n_clicks > 0) and (children is not None):
             searchDate = children.split('_')[1]
             searchDate = searchDate.strip('.fits')
@@ -280,7 +279,7 @@ def init_graphing(server):
     @app.callback(Output('2d-spec-download-data', 'data'),
                   Input('2d-spec-download', 'n_clicks'),
                   Input('click-data', 'children'))
-    def specDownload(n_clicks, children):
+    def twoDownload(n_clicks, children):
         if (n_clicks is not None) and (n_clicks > 0) and (children is not None):
             searchDate = children.split('_')[1]
             searchDate = searchDate.strip('.fits')
@@ -299,6 +298,8 @@ def init_graphing(server):
     @app.callback(
         Output('spec-data', 'children'),
         Output('spec-download-container', 'children'),
+        Output('spec-range', 'className'),
+        Output('resolution', 'className'),
         Input('click-data', 'children'),
         Input('dim-switch', 'value')
     )
@@ -331,8 +332,8 @@ def init_graphing(server):
         ]
 
         if (dim):
-            return read_csv(fs.find_one({'filetype': '2d'})).to_json(), download
+            return read_csv(fs.find_one({'filetype': '2d'})).to_json(), download, 'col', 'col d-none'
 
-        return read_csv(fs.find_one({'filetype': '1d'})).to_json(), download
+        return read_csv(fs.find_one({'filetype': '1d'})).to_json(), download, 'col d-none', 'col'
 
     return app

@@ -6,7 +6,7 @@ from wtforms import (
     ValidationError)
 from wtforms.validators import DataRequired, Email
 
-from .extensions import mongo, mail, login
+from .extensions import collection
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -22,31 +22,35 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_email(self, email):
-        user = mongo.db.user.find_one({"email": email.data})
+        user = collection('user').find_one({"email": email.data})
         if user is not None:
-            return False
+            raise ValidationError
         return True
 
 
 class ChangeEmailForm(FlaskForm):
     old = StringField('Old Email', validators=[DataRequired(), Email()])
-    new = StringField('New Email', validators=[DataRequired(), Email()])
+    e_new = StringField('New Email', validators=[DataRequired(), Email()])
     submit = SubmitField('')
 
     def validate_old(self, old):
         if current_user.email != old.data:
-            return False
-        oldEmail = mongo.db.user.find_one({"email": old.data})
-        return oldEmail is not None
+            raise ValidationError
+        oldEmail = collection('user').find_one({"email": old.data})
+        if oldEmail is None:
+            raise ValidationError
+        return True
 
 
-    def validate_new(self, new):
-        newEmail = mongo.db.user.find_one({"email": new.data})
-        return newEmail is None
+    def validate_new(self, e_new):
+        newEmail = collection('user').find_one({"email": e_new.data})
+        if newEmail is not None:
+            raise ValidationError
+        return True
 
 
 class ChangeInstitutionForm(FlaskForm):
-    new = StringField('New Institution', validators=[DataRequired()])
+    i_new = StringField('New Institution', validators=[DataRequired()])
     submit = SubmitField('')
 
 
@@ -54,5 +58,3 @@ class ForgotForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('')
 
-
-#TODO add news, add glossary

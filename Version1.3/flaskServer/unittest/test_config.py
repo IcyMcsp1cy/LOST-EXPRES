@@ -1,10 +1,9 @@
-
 FLASK_ENV = 'development'
-DEBUG = False
-SECRET_KEY = 'AlrightThenKeepYourSecrets'
+DEBUG = True
+SECRET_KEY = 'secret'
 
 MONGO_URI = 'mongodb+srv://Dev:dev@cluster0.odagz.mongodb.net/SolarExpres?retryWrites=true&w=majority'
-TESTING = False
+TESTING = True
 
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 465

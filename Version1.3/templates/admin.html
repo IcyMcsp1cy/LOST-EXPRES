@@ -4,26 +4,26 @@
 {% set title = "Admin" %}
 {% set title_link = "#" %}
 
+{% block stylesheets %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for("static", filename="sidebar.css" ) }}">
+{% endblock %}
+
 {% block body %}
 <div class="d-flex h-100" id="wrapper">
     <!-- Sidebar -->
     <div class="bg-dark border-right-dark sticky-top" id="sidebar-wrapper">
         <div class="list-group list-group-flush">
             {{ side_link("/admin/", "User Manager") }}
-            {{ side_link("/admin/news", "News Editor") }}
-            {{ side_link("/admin/files", "File Management") }}
-            {{ side_link("/admin/glossary", "Glossary Editor") }}
+            {{ side_link("/admin/news", "News Manager") }}
+            {{ side_link("/admin/glossary", "Glossary Manager") }}
+            {{ side_link("/admin/files", "File Manager") }}
 
 
         </div>
     </div>
 
-    <script>
-        $("#menu-toggle").click(function(e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
-        });
-    </script>
+    
     <!-- /#sidebar-wrapper -->
 
     <!-- Page Content -->
@@ -32,9 +32,7 @@
         {% include 'navbar.html' %}
         <br>
         <main role="main" class="container">
-            {% block content %}
             {% raw %}{%app_entry%}{% endraw %}
-            {% endblock content %}
         </main>
     </div>
 </div>
@@ -45,14 +43,9 @@
         $("#wrapper").toggleClass("toggled");
     });
 </script>
-{% endblock body %}
-
-
-{% block scripts %}
     {% raw %}
     {%config%}
     {%scripts%}
     {%renderer%}
-    {% endraw %}  
-    <link rel="stylesheet" href="{{ url_for("static", filename="sidebar.css" ) }}">
-{% endblock %}
+    {% endraw %}
+{% endblock body %}
