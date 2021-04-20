@@ -40,27 +40,8 @@ file_manager = html.Div([
         initial_visible_month=date.today(),
     ),
     html.Button('Submit', id='date-submit', className='btn mx-2'),
-    html.Div(id='output-container-date-picker-single'),
+    html.Br(),
 
-    dcc.Upload(
-        id='file-data',
-        children=html.Div([
-            'Drag and Drop or ',
-            html.A('Select Files')
-        ]),
-        style={
-            'width': '100%',
-            'height': '60px',
-            'lineHeight': '60px',
-            'borderWidth': '1px',
-            'borderStyle': 'dashed',
-            'borderRadius': '5px',
-            'textAlign': 'center',
-            'margin': '10px'
-        },
-        # Allow multiple files to be uploaded
-        multiple=True
-    ),
     html.Div(className='', id='file-alert'),
 ])
 
@@ -678,7 +659,7 @@ def init_admin( server ):
             
 
     @app.callback(
-        Output('output-container-date-picker-single', 'children'),
+        Output('file-alert', 'children'),
         Input('date-submit', 'n_clicks'),
         State('date-picker', 'date'))
     def update_output(submit, date_value):
@@ -699,6 +680,11 @@ def init_admin( server ):
                         }
                     })
             rv_plot(server)
-            return string_prefix + date_string + str(setDate)
+            return Alert(
+                ["Permissions set to "+ date_string],
+                id="alert-auto",
+                is_open=True,
+                duration=10000,
+            )
 
     return app
