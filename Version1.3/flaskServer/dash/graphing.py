@@ -162,11 +162,10 @@ def init_graphing(server):
                         ),
                     ], type="default", ),
                     Div([
-                        Div([
-                            'Resolution\n',
-                            
-                        ],
-                        id='label'),
+                    ],
+                    id='slide-label',
+                    className='w-100 text-center'),
+                    Div([
                         
                         Slider(
                             min=1,
@@ -300,6 +299,7 @@ def init_graphing(server):
         Output('spec-download-container', 'children'),
         Output('spec-range', 'className'),
         Output('resolution', 'className'),
+        Output('slide-label', 'children'),
         Input('click-data', 'children'),
         Input('dim-switch', 'value')
     )
@@ -332,8 +332,8 @@ def init_graphing(server):
         ]
 
         if (dim):
-            return read_csv(fs.find_one({'filetype': '2d'})).to_json(), download, 'col', 'col d-none'
+            return read_csv(fs.find_one({'filetype': '2d'})).to_json(), download, 'col', 'col d-none', 'Order Range\n'
 
-        return read_csv(fs.find_one({'filetype': '1d'})).to_json(), download, 'col d-none', 'col'
+        return read_csv(fs.find_one({'filetype': '1d'})).to_json(), download, 'col d-none', 'col', 'Resolution\n'
 
     return app
