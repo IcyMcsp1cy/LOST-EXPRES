@@ -5,7 +5,7 @@ from dash import Dash
 from dash_core_components import (
     Graph, Slider, RangeSlider,
     DatePickerRange, Loading)
-from dash_html_components import Div, Pre, Br, Button, Span
+from dash_html_components import Div, Pre, Br, Button, Span, I
 from dash_bootstrap_components import Tooltip
 from dash.dependencies import (Input,
                                Output, State, ClientsideFunction)
@@ -148,13 +148,39 @@ def init_graphing(server):
                     "Each graph is interactive, and can be navigated with its toolbar",
                     target="spec-tool"
                 ),
+                Tooltip(
+                    "Each graph has a tool bar in the upper-right hand corner that appears when you mouse over a graph."
+                    "Use the buttons in the tool bar to zoom in, zoom out, reset the axis, save a screen shot, "
+                    "and more. Click on a point in the Radial Velocity graph to display the Spectrum graph below."  
+                    "Hover over the slider and toggle bottoms below the lower graph to further interact with the"
+                    "spectrum data.",
+                    target="graph-tool"
+                ),
                 Loading([
-                    
+                    Div([
+                        Button([
+                                I(
+                                    className="fas fa-info-circle",
+                                ),
+                                Span(
+                                    ' Info',
+                                )
+                            ],
+                            id='graph-tool',
+                            className='btn btn-warning btn-sm',
+                        ),
+                    ]),
                     Div(
                         id='rv-download-container'
                     ),
-                    Button(
-                        'Download Radial Velocities',
+                    Button([
+                            I(
+                                className="fas fa-download",
+                            ),
+                            Span(
+                                " Download Radial Velocities",
+                            )
+                        ],
                         id='rv-download',
                         className='btn btn-primary btn-sm float-right',
                     ),
@@ -169,7 +195,6 @@ def init_graphing(server):
                         initial_visible_month=date(2020, 8, 23),
                         end_date=date(2020, 9, 18)
                     ),
-                    Span(['(i)'], id='rv-tool', className='point'),
                     Graph(
                         id='rv-plot',
                         className="",
@@ -195,8 +220,14 @@ def init_graphing(server):
                     Loading([
                         Div([
                             Div([
-                                Button(
-                                    'Download 1D',
+                                Button([
+                                        I(
+                                            className="fas fa-download",
+                                        ),
+                                        Span(
+                                            " Download 1D",
+                                        )
+                                    ],
                                     id='1d-spec-download',
                                     className='btn btn-primary btn-sm',
                                 ),
@@ -206,8 +237,13 @@ def init_graphing(server):
                                 ),
                             ], className='pr-2'),
                             Div([
-                                Button(
-                                    'Download 2D',
+                                Button([
+                                    I(
+                                        className="fas fa-download",
+                                    ),
+                                    Span(
+                                        " Download 2D",
+                                    )],
                                     id='2d-spec-download',
                                     className='btn btn-primary btn-sm',
                                 ),
@@ -222,7 +258,6 @@ def init_graphing(server):
                             children=[],
                             className='d-none'
                         ),
-                        Span(['(i)'], id='spec-tool', className='point'),
                         Graph(
                             id='spec-plot',
                             className="pt-0",
