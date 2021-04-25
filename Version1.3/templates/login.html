@@ -8,28 +8,33 @@
         <div class="col-md-12 text-center">
            <h1>Login</h1>
         </div>
-   </div>
-   <form action="" method="post" novalidate>
-      {{ form.csrf_token }}
-          <div class="form-group">
-            {{ form.email.label }}
-            <input id="email" class="form-control" name="email" required="" size="32" type="email" value="" placeholder="ex@mple.com">
+    </div>
+    <form action="" method="post" novalidate>
+        {% for msg in get_flashed_messages() %}
+        <div class="alert alert-warning" role="alert">
+            {{msg}}
         </div>
-          <div class="form-group">
-            {{ form.password.label }}
-            <input id="password" class="form-control" name="password" required="" size="32" type="password" value="" placeholder="************">
-          </div>
-          <div class="col-md-12 text-center ">
-             <button type="submit" name="submit" class="btn btn-block mybtn btn-primary tx-tfm">Login</button>
-          </div>
-          <br>
+        {% endfor %}
+        {{ form.csrf_token }}
+            <div class="form-group">
+                {{ form.email.label }}
+                <input id="email" class="form-control" name="email" required="" size="32" type="email" value="" placeholder="ex@mple.com">
+            </div>
+            <div class="form-group">
+                {{ form.password.label }}
+                <input id="password" class="form-control" name="password" required="" size="32" type="password" value="" placeholder="************">
+            </div>
+            <div class="col-md-12 text-center ">
+                <button type="submit" name="submit" class="btn btn-block mybtn btn-primary tx-tfm">Login</button>
+            </div>
+            <br>
+        </div>
 
-          </div>
-
-          <div class="form-group">
+        <div class="form-group">
             <p class="text-center">Don't have account? <a href="/register" id="signup">Register here</a></p>
             <p class="text-center"> <a href="/forgot" id="signup">Forgot your password?</a></p>
         </div>
-       </form>
+    </form>
+
 </div>
 {% endblock %}

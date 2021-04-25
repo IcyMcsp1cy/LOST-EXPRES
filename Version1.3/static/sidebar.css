@@ -18,6 +18,10 @@
    padding-right: 2ch !important;
  }
 
+ #menu-toggle {
+   cursor: pointer
+ }
+
 .border {
   border: 3px solid !important;
 }

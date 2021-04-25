@@ -1,6 +1,6 @@
 from bson import ObjectId
-from . import *
 from ..userClass import User
+from . import *
 
 fName = 'first'
 lName = 'last'
@@ -35,6 +35,7 @@ def test_user_mixin():
     assert not User.is_anonymous()
     assert user.check_password(user.password)
     assert isinstance(user.to_json(), dict)
+
 
 def test_get_user(server):
     with server.test_client() as client:

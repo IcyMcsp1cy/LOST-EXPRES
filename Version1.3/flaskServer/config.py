@@ -3,7 +3,7 @@ FLASK_ENV = 'development'
 DEBUG = False
 SECRET_KEY = 'AlrightThenKeepYourSecrets'
 
-MONGO_URI = 'mongodb+srv://Dev:dev@cluster0.odagz.mongodb.net/SolarExpres?retryWrites=true&w=majority'
+MONGO_URI = 'mongodb+srv://Dev:dev@cluster0.odagz.mongodb.net/lost?retryWrites=true&w=majority'
 TESTING = False
 
 MAIL_SERVER = 'smtp.gmail.com'
@@ -22,6 +22,8 @@ csv_label = {
     'filename': 'FILENAME',
     'flux': 'FLUX',
     'mjd': 'MJD',
-    'velocity': 'V',
+    'v': 'V',
     'wavelength': '# WAVE',
+
 }
+rv_label = ['FILENAME', 'MJD', 'V']

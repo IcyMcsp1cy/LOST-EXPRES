@@ -3,25 +3,20 @@ from dash import Dash, callback_context
 from flask_login import current_user
 import dash_core_components as dcc
 import dash_html_components as html
-from dash_bootstrap_components import themes, Table, Alert, Card, CardBody, CardHeader, Button
+from dash_bootstrap_components import Alert, Card, CardBody, Button
 from dash.dependencies import Input, Output, State, ClientsideFunction
 from dash.exceptions import PreventUpdate
 from flask_wtf.recaptcha.widgets import JSONEncoder
 from pandas.core.frame import DataFrame
-from plotly.express import scatter
 import pandas as pd
 import dash_table
-import uuid
 from julian import to_jd
-import base64
-import io
-import gridfs
 from datetime import date, datetime
 from bson.objectid import ObjectId
 from .graphing import rv_plot
 from ..extensions import JSONEncoder, collection, sendMail, mongo
 from ..config import csv_label
-from pymongo import DESCENDING
+from pymongo import DESCENDING 
 
 
 url_base = "/admin/"
@@ -34,21 +29,114 @@ empty_layout = html.Div([
 
 file_manager = html.Div([
     html.H1('File Management', className='mb-2'),
-    dcc.DatePickerSingle(
-        id='date-picker',
-        min_date_allowed=date(1995, 8, 5),
-        max_date_allowed=date.today(),
-        initial_visible_month=date.today(),
-    ),
-    html.Button('Submit', id='date-submit', className='btn mx-2'),
-    html.Br(),
 
-    html.Div(className='', id='file-alert'),
+    dcc.Loading([
+        html.P([
+
+            'Set public/private access date:\n',
+        ]),
+        dcc.DatePickerSingle(
+            id='date-picker',
+            min_date_allowed=date(1995, 8, 5),
+            max_date_allowed=date.today(),
+            initial_visible_month=date.today(),
+        ),
+        html.Button('Submit', id='date-submit', className='btn mx-2'),
+        html.Br(),
+        html.Div(className='', id='file-alert'),
+    ], id='date-loader'),
+    html.Br(),
 ])
 
+
+glos_manager = html.Div([
+    html.H1('Glossary Management', className='mb-2'),
+    html.Br(),
+    dcc.Input(
+        id="glos-term",
+        type='text',
+        placeholder="Glossary Term (Naming a term after another will replace that term)",
+        className='w-75 form-control mb-2'
+    ),
+    dcc.Textarea(
+        id='glos-text',
+        placeholder='Definition',
+        style={'height': 50},
+        className='input-group w-75 form-control pb-2'
+    ),
+    html.Button('Submit', id='glos-submit', className='btn my-2'),
+    html.Button('Delete', id='glos-delete', className='btn my-2 mx-2 d-none'),
+    html.Div(className='', id='glos-alert'),
+    html.Div(className='', id='glos-alert-2'),
+    html.Br()
+], className='mb-4')
+
+
+
+user_manager = html.Div([
+    html.H1('User Management', className='mb-2'),
+    html.Br(),
+    html.Div([
+        html.P('', className="d-none", id='user-email'),
+    ], id='user-display'),
+    Button('Verify', id='user-verify', className='btn my-2 mx-2 d-none', color='success'),
+    Button('Reject', id='user-reject', className='btn my-2 mx-2 d-none', color='danger'),
+    html.Br(),
+    html.Div([
+        Button('Purge Unverified Users', id='user-purge', className='btn my-2 mx-2', color='warning'),
+    ],className='text-right', id='user-control'),
+    html.Div(className='', id='user-alert'),
+    
+], className='mb-4')
+
+
+
+news_manager = html.Div([
+    html.H1('News Management', className='mb-2'),
+    html.Br(),
+    dcc.Input(
+        id="news-title",
+        type='text',
+        placeholder="Post Title (Naming a post after another will replace that post)",
+        className='w-75 form-control mb-2'
+    ),
+    dcc.Input(
+        id="news-subtitle",
+        type='text',
+        placeholder="Subtitle",
+        className='w-75 form-control mb-2'
+    ),
+    dcc.Input(
+        id="news-author",
+        type='text',
+        placeholder="Author",
+        className='w-50 form-control mb-2'
+    ),
+    dcc.Textarea(
+        id='news-text',
+        placeholder='Lorem Ipsum Dolor',
+        style={'height': 100},
+        className='input-group w-100 form-control pb-2'
+    ),
+    Button('Submit', id='news-submit', className='btn my-2', n_clicks=0, color='success'),
+    Button('Delete', id='news-delete', className='btn my-2 mx-2 d-none', n_clicks=0, color='danger'),
+    Button('Set on Homepage', id='news-home', className='btn my-2 mx-2 d-none', n_clicks=0, color='secondary'),
+    html.Div(className='', id='news-alert'),
+    html.Div(className='', id='news-alert-2'),
+    html.Br()
+], className='mb-4')
+
+
+
 def getFiles():
-    file = list(collection('fs').files.find({}))
-    df = pd.DataFrame(eval(JSONEncoder().encode(file)))
+    one = list(collection('one').files.find({}))
+    for i in one:
+        i['filetype'] = '1d'
+    two= list(collection('one').files.find({}))
+    for i in two:
+        i['filetype'] = '2d'
+    sort = sorted(one+two, key=lambda k: k['uploadDate'], reverse=True)
+    df = pd.DataFrame(eval(JSONEncoder().encode(sort)))
     
     table = dash_table.DataTable(
         data=df.to_dict('records'),
@@ -67,33 +155,6 @@ def getFiles():
         id='file-table'
     )
     return [file_manager, table]
-
-
-
-    
-
-
-glos_manager = html.Div([
-    html.H1('Glossary Management', className='mb-2'),
-    html.Br(),
-    dcc.Input(
-        id="glos-term",
-        type='text',
-        placeholder="Glossary Term (Naming a term after another will replace that term)",
-        className='w-75 form-control mb-2'
-    ),
-    dcc.Textarea(
-        id='glos-text',
-        placeholder='Entry Text',
-        style={'height': 50},
-        className='input-group w-75 form-control pb-2'
-    ),
-    html.Button('Submit', id='glos-submit', className='btn my-2'),
-    html.Button('Delete', id='glos-delete', className='btn my-2 mx-2 d-none'),
-    html.Div(className='', id='glos-alert'),
-    html.Div(className='', id='glos-alert-2'),
-    html.Br()
-], className='mb-4')
 
 
 def getGlos():
@@ -123,25 +184,9 @@ def getGlos():
     return [glos_manager, table,]
 
 
-user_manager = html.Div([
-    html.H1('User Management', className='mb-2'),
-    html.Br(),
-    html.Div([
-        html.P('', className="d-none", id='user-email'),
-    ], id='user-display'),
-    Button('Verify', id='user-verify', className='btn my-2 mx-2 d-none', color='success'),
-    Button('Reject', id='user-reject', className='btn my-2 mx-2 d-none', color='danger'),
-    html.Br(),
-    html.Div([
-        Button('Purge Unverified Users', id='user-purge', className='btn my-2 mx-2', color='warning'),
-    ],className='text-right', id='user-control'),
-    html.Div(className='', id='user-alert'),
-    
-], className='mb-4')
-
 
 def getUser():
-    users = list(collection('user').find({}))
+    users = list(collection('user').find({}).sort('_id', DESCENDING))
     df = pd.DataFrame(eval(JSONEncoder().encode(users)))
     
     table = dash_table.DataTable(
@@ -184,41 +229,6 @@ def getUser():
     return [user_manager, table,]
 
 
-news_manager = html.Div([
-    html.H1('News Management', className='mb-2'),
-    html.Br(),
-    dcc.Input(
-        id="news-title",
-        type='text',
-        placeholder="Post Title (Naming a post after another will replace that post)",
-        className='w-75 form-control mb-2'
-    ),
-    dcc.Input(
-        id="news-subtitle",
-        type='text',
-        placeholder="Subtitle",
-        className='w-75 form-control mb-2'
-    ),
-    dcc.Input(
-        id="news-author",
-        type='text',
-        placeholder="Author",
-        className='w-50 form-control mb-2'
-    ),
-    dcc.Textarea(
-        id='news-text',
-        placeholder='Lorem Ipsum Dolor',
-        style={'height': 100},
-        className='input-group w-100 form-control pb-2'
-    ),
-    Button('Submit', id='news-submit', className='btn my-2', n_clicks=0, color='success'),
-    Button('Delete', id='news-delete', className='btn my-2 mx-2 d-none', n_clicks=0, color='danger'),
-    Button('Set on Homepage', id='news-home', className='btn my-2 mx-2 d-none', n_clicks=0, color='secondary'),
-    html.Div(className='', id='news-alert'),
-    html.Div(className='', id='news-alert-2'),
-    html.Br()
-], className='mb-4')
-
 def getNews():
     news = list(collection('news').find({}))
     df = pd.DataFrame(eval(JSONEncoder().encode(news)))
@@ -248,30 +258,26 @@ def getNews():
 
 
 def init_admin( server ):
-    fs = gridfs.GridFS(mongo.db)
-
-    external_stylesheets = [themes.BOOTSTRAP]
 
     app = Dash(
     '__main__',
     server=server,
     url_base_pathname=url_base,
     assets_folder='static',
-    external_stylesheets=external_stylesheets
     )
 
     @server.before_request
     def adminDash():
         if str(request.endpoint).startswith(url_base):
             app.index_string = render_template('admin.html')
-            if current_user.is_authenticated and current_user.accountType == 'admin':
-                return
-            abort(403)
-
+            if current_user.is_authenticated:
+                if current_user.accountType == 'admin':
+                    return
+                abort(403)
+            return redirect('/login')
 
     app.layout = empty_layout
 
-    
 
     @app.callback(
         Output('page-wrapper', 'children'),
@@ -492,7 +498,8 @@ def init_admin( server ):
         elif 'news-home' in changed_id:
             post = collection('news').find_one({'title': title})
             if(post):
-                collection('news').update_one({'location': 'home'}, {'$set': {'location': 'default'}}, True)
+                home = collection('news').find_one({'location': 'home'})
+                if(home): collection('news').update_one({'location': 'home'}, {'$set': {'location': 'default'}}, True)
                 collection('news').update_one({'_id': post['_id']}, {'$set': {'location': 'home'}}, True)
                 alert = Alert([
                     "Post set as home"
@@ -613,7 +620,7 @@ def init_admin( server ):
             sendMail(entry['email'], "Database Access Granted to " + fullname,
             messageBody)
 
-            result = list(collection('user').find({}))
+            result = list(collection('user').find({}).sort('_id', DESCENDING))
             df = pd.DataFrame(eval(JSONEncoder().encode(result)))
 
             return Alert(
@@ -643,13 +650,13 @@ def init_admin( server ):
                     duration=10000,
                     color='danger'
                 )
-            news = list(collection('user').find())
+            news = list(collection('user').find().sort('_id', DESCENDING))
             df = pd.DataFrame(eval(JSONEncoder().encode(news)))
             return alert, df.to_dict('records'), 'd-none'
 
         elif 'user-purge' in changed_id:
             removed = collection('user').remove({'type': 'unverified'})
-            news = list(collection('user').find())
+            news = list(collection('user').find().sort('_id', DESCENDING))
             df = pd.DataFrame(eval(JSONEncoder().encode(news)))
             return Alert(
                 "Applicants Deleted",
@@ -682,9 +689,10 @@ def init_admin( server ):
                     {'_id': entry['_id']},
                     {
                         '$set': {
-                            'PUBLIC': (float(entry['MJD']) > setDate)
+                            'PUBLIC': (float(entry['MJD']) < setDate)
                         }
                     })
+
             rv_plot(server)
             return Alert(
                 ["Permissions set to "+ date_string],
