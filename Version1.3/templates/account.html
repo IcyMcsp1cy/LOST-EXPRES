@@ -10,6 +10,11 @@
             <h1>Account</h1>
         </div>
     </div>
+    {% for msg in get_flashed_messages() %}
+        <div class="alert alert-warning" role="alert">
+            {{msg}}
+        </div>
+    {% endfor %}
     <h2>Change email address:</h2>
     <form action="" method="post" novalidate>
         {{ form1.csrf_token }}

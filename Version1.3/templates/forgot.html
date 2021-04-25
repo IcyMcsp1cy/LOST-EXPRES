@@ -15,6 +15,11 @@
   </div>
 
   <form action="/forgot" method="post" onsubmit="submit()">
+    {% for msg in get_flashed_messages() %}
+        <div class="alert alert-warning" role="alert">
+            {{msg}}
+        </div>
+        {% endfor %}
   {{ form.csrf_token }}
 
   <div class="form-group">

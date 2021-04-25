@@ -1,3 +1,4 @@
+from flask import flash
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import (
@@ -23,6 +24,7 @@ class RegistrationForm(FlaskForm):
 
     def validate_email(self, email):
         user = collection('user').find_one({"email": email.data})
+        flash('Email Already Registered')
         if user is not None:
             raise ValidationError
         return True

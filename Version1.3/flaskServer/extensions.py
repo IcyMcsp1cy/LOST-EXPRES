@@ -1,5 +1,6 @@
 from flask import current_app
 from flask_pymongo import PyMongo
+from gridfs import GridFS
 from flask_mail import Mail, Message
 from flask_login import LoginManager
 from bson.objectid import ObjectId
@@ -12,6 +13,11 @@ def collection(collection):
     if not current_app.config['TESTING']:
         return mongo.db[collection]
     return mongo.db['test_' + collection]
+
+def get_fs(collection):
+    if not current_app.config['TESTING']:
+        return GridFS(mongo.db, collection=collection)
+    return GridFS(mongo.db, collection='test_'+collection)
 
 
 mail= Mail()

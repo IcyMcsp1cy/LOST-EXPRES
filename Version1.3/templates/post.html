@@ -1,52 +1,43 @@
 {% extends 'base_page.html' %}
 
 
-{% block stylesheets %}
-    {{ super() }}
-    <link href="{{url_for('static', filename='clean-blog.min.css') }}" rel="stylesheet">
-{% endblock %}
-
 {% block content %}
 
-  <!-- Page Header -->
-  <header class="masthead" style="background-image: url('{{ url_for('static', filename='post-bg.jpg') }}')">
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <div class="post-heading">
-            <h1>{{post.title}} </h1>
-            <h2 class="subheading">{{post.subtitle}}</h2>
-            <span class="meta">Posted by
-              <a href="#">{{post.author}}</a>
-              on {{post.datetime}}</span>
-          </div>
-        </div>
-      </div>
+<div class="jumbotron jumbotron-fluid m-0 pb-0 pt-auto rounded">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="container-fluid p-0 pb-2 text-white">
+        <h1 class="display-3 mx-3"><strong>{{post.title}}</strong></h1>
+        <p class="lead mx-3 mb-0"><strong>{{post.subtitle}}</strong></p>
     </div>
-  </header>
+</div>
+<style>
+    .jumbotron {
+        {% if post.image is defined %}
+            background-image: url("{{ url_for('static', filename='images/'+post.image) }}");
+        {% else %}
+            background-image: url("{{ url_for('static', filename='images/post-bg.jpg') }}");
+        {% endif %}
+    }
+</style> 
+<div class="row">
+    <div class="col-md-10 col-lg-8 mx-auto">
 
-  <!-- Post Content -->
-  <article>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <p>{{post.content}}</p>
+        <div class="card border-0 w-100 mx-md-auto" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">By {{post.author}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Submitted {{post.datetime}}</h6>
+                <div class='p-content'>
+                    <p class="card-text">{{post.content}}</p>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </article>
+</div>
 
-  <hr>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <p class="copyright text-muted">Copyright &copy; Your Website 2020</p>
-        </div>
-      </div>
-    </div>
-  </footer>
 {% endblock %}

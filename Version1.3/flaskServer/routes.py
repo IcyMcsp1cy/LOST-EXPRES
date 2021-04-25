@@ -8,7 +8,7 @@ from .extensions import mongo, sendMail, collection
 from .userClass import User
 from .forms import *
 from .dash.graphing import rv_plot
-from pymongo import DESCENDING
+from pymongo import DESCENDING 
 from bson.objectid import ObjectId
 
 def init_views( server ):
@@ -41,8 +41,8 @@ def init_views( server ):
                     ['/glossary', 'Glossary'],
                 ]
                 g.drop = [
+                    ['/admin', 'Website Manager'],
                     ['/account', 'Account Settings'],
-                    ['/admin', 'Web Management'],
                 ]
                 g.color = 'danger'
             else:
@@ -98,7 +98,7 @@ def init_views( server ):
     @server.route('/index')
     def index():
         post = collection('news').find_one({'location': "home"})
-        return render_template('index.html', plot=rv_plot.result, post = post)
+        return render_template('index.html', plot=rv_plot.result, post = post, len=len)
 
 
     #! User Management
@@ -111,10 +111,11 @@ def init_views( server ):
             user = User.get_user(form.email.data)
             if user is None or not user.check_password(form.password.data):
                 flash('Invalid username or password')
-                return redirect(url_for('login'))
+                return render_template('login.html', title='Sign In', form=form)
             login_user(user)
 
             return redirect('/')
+        
         return render_template('login.html', title='Sign In', form=form)
 
 
@@ -152,8 +153,6 @@ def init_views( server ):
                 user.email + "\nInstitution: " + user.institution)
 
             return redirect('/')
-        else:
-            flash('Please choose a different email')
         return render_template('register.html', form=form)
 
 
@@ -164,9 +163,14 @@ def init_views( server ):
         form1 = ChangeEmailForm()
         form2 = ChangeInstitutionForm()
         if form1.validate_on_submit():
-            collection('user').update_one({'email': form1.old.data}, {'$set': {'email': form1.e_new.data}})
+            if current_user.email != form1.old.data:
+                flash('Email does not exist')
+            else:
+                collection('user').update_one({'email': form1.old.data}, {'$set': {'email': form1.e_new.data}})
+                flash('Email updated')
         elif form2.validate_on_submit():
             collection('user').update_one({'_id': ObjectId(current_user.get_id())}, {'$set': {'institution': form2.i_new.data}})
+            flash('Institution updated updated')
         return render_template('account.html', form1=form1, form2=form2)
 
 

@@ -23,10 +23,6 @@
         </div>
     </div>
 
-    
-    <!-- /#sidebar-wrapper -->
-
-    <!-- Page Content -->
     <div class="overflow-auto h-100" id="page-content-wrapper">
 
         {% include 'navbar.html' %}
@@ -37,15 +33,21 @@
     </div>
 </div>
 
+
+{% endblock body %}
+
+{% block dashScripts %}
+{% raw %}
+{%config%}
+{%scripts%}
+{%renderer%}
+{% endraw %}
+
 <script>
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
     });
 </script>
-    {% raw %}
-    {%config%}
-    {%scripts%}
-    {%renderer%}
-    {% endraw %}
-{% endblock body %}
+
+{% endblock %}

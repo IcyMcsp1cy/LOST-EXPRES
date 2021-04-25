@@ -12,10 +12,25 @@ def test_not_found(server):
         response = client.get('/obviouslyFake')
         assert response.status_code == 404
 
-def test_forbidden(server):
+def test_admin(server):
     with server.test_client() as client:
         response = client.get('/admin/')
+        assert response.status_code == 302
+
+        client.post('/login', data=dict(
+                email='taken@email.com', 
+                password='taken',
+        ))
+        response = client.get('/admin/')
         assert response.status_code == 403
+
+        client.get('/logout')
+        client.post('/login', data=dict(
+                email='admin@email.com', 
+                password='adminpass',
+        ))
+        response = client.get('/admin/')
+        assert response.status_code == 200
 
 def test_login(server):
     with server.test_client() as client:
@@ -49,7 +64,7 @@ def test_logout(server):
             assert response.status_code == 200
 
             response = client.get('/admin/')
-            assert response.status_code == 403
+            assert response.status_code == 302
 
 
 def test_register(server):

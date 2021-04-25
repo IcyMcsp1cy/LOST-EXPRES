@@ -1,27 +1,24 @@
 from json import dumps, loads
 from . import *
-from ..userClass import User
-
-get_rv = {
-    "output": "2d-spec-download-data.data",
-    "outputs": {
-        "id": "2d-spec-download-data",
-        "property": "data"
-        },
-    "inputs": [
-        {"id": "2d-spec-download",
-            "property": "n_clicks"},
-        {"id": "click-data",
-            "property": "children","value": "Sun_200902.1101.fits"}
-    ],
-    "changedPropIds": ["click-data.children"]
-}
-
-rv_out = {'multi': True, 'response': {'2d-spec-download-data': {'data': None}}}
+from .strings import *
 
 
-def test_dash(server):
+def test_clickdata(server):
     with server.test_client() as client:
         with server.app_context():
-            response = client.post('/data/_dash-update-component', data=dumps(get_rv), content_type='application/json')
-            assert loads(response.get_data()) == rv_out
+            response = client.post('/data/_dash-update-component', data=dumps(click_1d), content_type='application/json')
+            assert response.status_code == 200
+            
+            response = client.post('/data/_dash-update-component', data=dumps(click_2d), content_type='application/json')
+            assert response.status_code == 200
+
+def test_download(server):
+    with server.test_client() as client:
+        with server.app_context():
+            response = client.post('/data/_dash-update-component', data=dumps(down_rv), content_type='application/json')
+            print(loads(response.get_data()))
+            assert response.status_code == 200
+            response = client.post('/data/_dash-update-component', data=dumps(down_1d), content_type='application/json')
+            assert response.status_code == 200
+            response = client.post('/data/_dash-update-component', data=dumps(down_2d), content_type='application/json')
+            assert response.status_code == 200
