@@ -19,9 +19,9 @@ csv_label = {
     # Dict of csv formatting options.
     # 'type': 'DEFINE LABEL HERE'
     'accept': 'ACCEPT',
-    'filename': 'FILENAME',
+    'filename': 'OBNM',
     'datetime': 'MJD',
-    'velocity': 'V',
+    'velocity': 'MNVEL',
 
 }
 graph_label = {
