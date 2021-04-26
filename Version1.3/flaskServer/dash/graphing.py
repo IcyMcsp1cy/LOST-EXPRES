@@ -190,10 +190,6 @@ def init_graphing(server):
                     DatePickerRange(
                         id='date-range',
                         className='pt-1 d-flex justify-content-end w-100',
-                        min_date_allowed=date(2020, 8, 23),
-                        max_date_allowed=date(2021, 9, 19),
-                        initial_visible_month=date(2020, 8, 23),
-                        end_date=date(2020, 9, 18)
                     ),
                     Graph(
                         id='rv-plot',
