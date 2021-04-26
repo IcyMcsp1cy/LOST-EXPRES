@@ -127,11 +127,6 @@ def init_graphing(server):
                     target="dim-switch",
                 ),
                 Tooltip(
-                    "Each point represents a reading from the spectrograph "
-                    "Clicking a point will load that spectrum's data",
-                    target="rv-tool",
-                ),
-                Tooltip(
                     "The name of the file being displayed",
                     target="click-data",
                     placement="bottom"
@@ -143,10 +138,6 @@ def init_graphing(server):
                 Tooltip(
                     "Reduces the amount of points rendered to the screen",
                     target="res-tool",
-                ),
-                Tooltip(
-                    "Each graph is interactive, and can be navigated with its toolbar",
-                    target="spec-tool"
                 ),
                 Tooltip(
                     "Each graph has a tool bar in the upper-right hand corner that appears when you mouse over a graph."
