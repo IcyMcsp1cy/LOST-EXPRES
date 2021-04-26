@@ -1,10 +1,29 @@
 
+csv_label = {
+    'accept': 'ACCEPT',
+    'filename': 'FILENAME',
+    'datetime': 'MJD',
+    'velocity': 'V',
+    'flux': 'FLUX',
+    'wavelength': '# WAVE',
+    'order': 'ORDER'
+}
+graph_label = {
+    'rv_x': 'Recorded Date',
+    'rv_y': 'Radial Velocity',
+    'spec_x': 'Wavelength(Angstrom)',
+    'spec_y': 'Flux',
+}
+
+
+
+
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
     graphing: {
         clickData: function(clickData, table) {
             if(clickData === undefined) return;
             data = JSON.parse(table)
-            return data['FILENAME'][clickData.points[0].pointIndex]
+            return data[csv_label['filename']][clickData.points[0].pointIndex]
         },
         
         datefunc: function(start, end, table) {
@@ -27,8 +46,8 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             console.log(start)
             return {
                 'data':[{
-                    'x': Object.values(data['MJD']),
-                    'y': Object.values(data['V']),
+                    'x': Object.values(data[csv_label['datetime']]),
+                    'y': Object.values(data[csv_label['velocity']]),
                     'xaxis': 'x',
                     'yaxis': 'y',
                     'type': 'scattergl',
@@ -37,7 +56,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 'layout':{
                     'xaxis': {
                         'title': {
-                            'text': 'Recorded Date',
+                            'text': graph_label['rv_x'],
                             'font': {
                                 'size': 18,
                                 'color': '#7f7f7f'
@@ -47,7 +66,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     },
                     'yaxis': {
                         'title': {
-                            'text': 'Radial Velocity',
+                            'text': graph_label['rv_y'],
                             'font': {
                                 'size': 18,
                                 'color': '#7f7f7f'
@@ -75,12 +94,12 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
             let index = 0, x_order = [], y_order = [], data_structure = []
 
-            if( data.hasOwnProperty("ORDER")) {
+            if( data.hasOwnProperty(csv_label['order'])) {
                 for(let order = range[0]; order < range[1]; order++) {
-                    while(data['ORDER'][index] <= order) {
-                        if(data['ORDER'][index] === order) {
-                            x_order.push(data['# WAVE'][index])
-                            y_order.push(data['FLUX'][index])
+                    while(data[csv_label['order']][index] <= order) {
+                        if(data[csv_label['order']][index] === order) {
+                            x_order.push(data[csv_label['wavelength']][index])
+                            y_order.push(data[csv_label['flux']][index])
                         }
                         index++
                     }
@@ -105,15 +124,15 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     'wave':[],
                     'flux':[]
                 }
-                len =Object.keys(data['# WAVE']).length
+                len =Object.keys(data[csv_label['wavelength']]).length
                 for (i = 0; i < len; i=i+res) {
                     f=0
                     for (r=0; r < res; r+=1) {
-                        f += data['# WAVE'][i+r]
+                        f += data[csv_label['wavelength']][i+r]
                     }
 
                     less['wave'].push(f/res);
-                    less['flux'].push(data['FLUX'][i]);
+                    less['flux'].push(data[csv_label['wavelength']][i]);
                 }
                 data_structure = [{
                     'x': Object.values(less['wave']),
@@ -130,7 +149,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 'layout':{
                     'yaxis': {
                         'title': {
-                            'text': 'Flux',
+                            'text': graph_label['spec_y'],
                             'font': {
                                 'size': 18,
                                 'color': '#7f7f7f'
@@ -140,7 +159,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                         'autoscale': true},
                     'xaxis': {
                         'title': {
-                            'text': 'Wavelength(Angstroms)',
+                            'text': graph_label['spec_x'],
                             'font': {
                                 'size': 18,
                                 'color': '#7f7f7f'

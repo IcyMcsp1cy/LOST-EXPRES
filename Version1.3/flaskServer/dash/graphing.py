@@ -14,7 +14,7 @@ from dash_extensions.snippets import send_data_frame
 from dash.exceptions import PreventUpdate
 from pandas import read_csv, DataFrame
 from ..extensions import collection, mongo, get_fs
-from ..config import csv_label, rv_label
+from ..config import csv_label, rv_label, graph_label
 import julian
 from datetime import date
 import dash_daq as daq
@@ -39,21 +39,21 @@ def rv_plot(server):
         entries = list(collection('radialvelocity').find())
         if entries == []:
             df_none = DataFrame(columns=[
-                csv_label['mjd'], csv_label['filename'], csv_label['v']
+                csv_label['datetime'], csv_label['filename'], csv_label['velocity']
             ])
             rv_plot.result = {}
             rv_plot.data = df_none
             rv_plot.public = df_none
             return df_none
         data = DataFrame(entries)
-        data[csv_label['mjd']] = data[csv_label['mjd']].apply(from_mjd)
+        data[csv_label['datetime']] = data[csv_label['datetime']].apply(from_mjd)
         
         rv_plot.data = data
         rv = data[data['PUBLIC'] == True]
 
         fig = plotly.graph_objs.Scatter(
-            x= rv[csv_label['mjd']],
-            y= rv[csv_label['v']],
+            x= rv[csv_label['datetime']],
+            y= rv[csv_label['velocity']],
             mode="markers",
             marker=plotly.graph_objs.scatter.Marker(
                 opacity=0.6,
@@ -62,7 +62,7 @@ def rv_plot(server):
         )
         x_axis = {
             'title': {
-                'text': 'Date',
+                'text': graph_label['rv_x'],
                 'font': {
                     'size': 18,
                     'color': '#7f7f7f'
@@ -72,7 +72,7 @@ def rv_plot(server):
 
         y_axis = {
             'title': {
-                'text': 'Radial Velocity',
+                'text': graph_label['rv_y'],
                 'font': {
                     'size': 18,
                     'color': '#7f7f7f'
