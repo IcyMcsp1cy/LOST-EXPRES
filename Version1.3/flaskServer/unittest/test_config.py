@@ -13,15 +13,3 @@ MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 
 ADMIN_EMAIL = 'LOSTEXPRES2@gmail.com'
-
-csv_label = {
-    # Dict of csv formatting options.
-    # 'type': 'DEFINE LABEL HERE'
-    'accept': 'ACCEPT',
-    'filename': 'FILENAME',
-    'flux': 'FLUX',
-    'mjd': 'MJD',
-    'v': 'V',
-    'wavelength': '# WAVE',
-}
-rv_label = ['FILENAME', 'MJD', 'V']

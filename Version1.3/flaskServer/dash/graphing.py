@@ -5,7 +5,7 @@ from dash import Dash
 from dash_core_components import (
     Graph, Slider, RangeSlider,
     DatePickerRange, Loading)
-from dash_html_components import Div, Pre, Br, Button, Span
+from dash_html_components import Div, Pre, Br, Button, Span, I
 from dash_bootstrap_components import Tooltip
 from dash.dependencies import (Input,
                                Output, State, ClientsideFunction)
@@ -14,7 +14,7 @@ from dash_extensions.snippets import send_data_frame
 from dash.exceptions import PreventUpdate
 from pandas import read_csv, DataFrame
 from ..extensions import collection, mongo, get_fs
-from ..config import csv_label, rv_label
+from ..config import csv_label, rv_label, graph_label
 import julian
 from datetime import date
 import dash_daq as daq
@@ -39,21 +39,21 @@ def rv_plot(server):
         entries = list(collection('radialvelocity').find())
         if entries == []:
             df_none = DataFrame(columns=[
-                csv_label['mjd'], csv_label['filename'], csv_label['v']
+                csv_label['datetime'], csv_label['filename'], csv_label['velocity']
             ])
             rv_plot.result = {}
             rv_plot.data = df_none
             rv_plot.public = df_none
             return df_none
         data = DataFrame(entries)
-        data[csv_label['mjd']] = data[csv_label['mjd']].apply(from_mjd)
+        data[csv_label['datetime']] = data[csv_label['datetime']].apply(from_mjd)
         
         rv_plot.data = data
         rv = data[data['PUBLIC'] == True]
 
         fig = plotly.graph_objs.Scatter(
-            x= rv[csv_label['mjd']],
-            y= rv[csv_label['v']],
+            x= rv[csv_label['datetime']],
+            y= rv[csv_label['velocity']],
             mode="markers",
             marker=plotly.graph_objs.scatter.Marker(
                 opacity=0.6,
@@ -62,7 +62,7 @@ def rv_plot(server):
         )
         x_axis = {
             'title': {
-                'text': 'Date',
+                'text': graph_label['rv_x'],
                 'font': {
                     'size': 18,
                     'color': '#7f7f7f'
@@ -72,7 +72,7 @@ def rv_plot(server):
 
         y_axis = {
             'title': {
-                'text': 'Radial Velocity',
+                'text': graph_label['rv_y'],
                 'font': {
                     'size': 18,
                     'color': '#7f7f7f'
@@ -127,11 +127,6 @@ def init_graphing(server):
                     target="dim-switch",
                 ),
                 Tooltip(
-                    "Each point represents a reading from the spectrograph "
-                    "Clicking a point will load that spectrum's data",
-                    target="rv-tool",
-                ),
-                Tooltip(
                     "The name of the file being displayed",
                     target="click-data",
                     placement="bottom"
@@ -145,16 +140,38 @@ def init_graphing(server):
                     target="res-tool",
                 ),
                 Tooltip(
-                    "Each graph is interactive, and can be navigated with its toolbar",
-                    target="spec-tool"
+                    "Each graph has a tool bar in the upper-right hand corner that appears when you mouse over a graph."
+                    "Use the buttons in the tool bar to zoom in, zoom out, reset the axis, save a screen shot, "
+                    "and more. Click on a point in the Radial Velocity graph to display the Spectrum graph below."  
+                    "Hover over the slider and toggle bottoms below the lower graph to further interact with the"
+                    "spectrum data.",
+                    target="graph-tool"
                 ),
                 Loading([
-                    
+                    Div([
+                        Button([
+                                I(
+                                    className="fas fa-info-circle",
+                                ),
+                                Span(
+                                    ' Info',
+                                )
+                            ],
+                            id='graph-tool',
+                            className='btn btn-warning btn-sm',
+                        ),
+                    ]),
                     Div(
                         id='rv-download-container'
                     ),
-                    Button(
-                        'Download Radial Velocities',
+                    Button([
+                            I(
+                                className="fas fa-download",
+                            ),
+                            Span(
+                                " Download Radial Velocities",
+                            )
+                        ],
                         id='rv-download',
                         className='btn btn-primary btn-sm float-right',
                     ),
@@ -164,12 +181,7 @@ def init_graphing(server):
                     DatePickerRange(
                         id='date-range',
                         className='pt-1 d-flex justify-content-end w-100',
-                        min_date_allowed=date(2020, 8, 23),
-                        max_date_allowed=date(2021, 9, 19),
-                        initial_visible_month=date(2020, 8, 23),
-                        end_date=date(2020, 9, 18)
                     ),
-                    Span(['(i)'], id='rv-tool', className='point'),
                     Graph(
                         id='rv-plot',
                         className="",
@@ -195,8 +207,14 @@ def init_graphing(server):
                     Loading([
                         Div([
                             Div([
-                                Button(
-                                    'Download 1D',
+                                Button([
+                                        I(
+                                            className="fas fa-download",
+                                        ),
+                                        Span(
+                                            " Download 1D",
+                                        )
+                                    ],
                                     id='1d-spec-download',
                                     className='btn btn-primary btn-sm',
                                 ),
@@ -206,8 +224,13 @@ def init_graphing(server):
                                 ),
                             ], className='pr-2'),
                             Div([
-                                Button(
-                                    'Download 2D',
+                                Button([
+                                    I(
+                                        className="fas fa-download",
+                                    ),
+                                    Span(
+                                        " Download 2D",
+                                    )],
                                     id='2d-spec-download',
                                     className='btn btn-primary btn-sm',
                                 ),
@@ -222,7 +245,6 @@ def init_graphing(server):
                             children=[],
                             className='d-none'
                         ),
-                        Span(['(i)'], id='spec-tool', className='point'),
                         Graph(
                             id='spec-plot',
                             className="pt-0",
