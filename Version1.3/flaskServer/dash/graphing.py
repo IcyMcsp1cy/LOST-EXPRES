@@ -377,7 +377,7 @@ def init_graphing(server):
             except:
                 entry = one.find_one({})
                 specData = read_csv(entry)
-                return send_data_frame(specData.to_csv, filename=entry['filename']+".1d_spectrum.csv")
+                return send_data_frame(specData.to_csv, filename="1D_spectrum.csv")
 
     @app.callback(Output('2d-spec-download-data', 'data'),
                   Input('2d-spec-download', 'n_clicks'),
@@ -392,7 +392,7 @@ def init_graphing(server):
             except:
                 entry = one.find_one({})
                 specData = read_csv(entry)
-                return send_data_frame(specData.to_csv, filename=entry['filename']+".2d_spectrum.csv")
+                return send_data_frame(specData.to_csv, filename="2D_sprectrum.csv")
 
 
     @app.callback(

@@ -132,7 +132,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                     }
 
                     less['wave'].push(f/res);
-                    less['flux'].push(data[csv_label['wavelength']][i]);
+                    less['flux'].push(data[csv_label['flux']][i]);
                 }
                 data_structure = [{
                     'x': Object.values(less['wave']),
